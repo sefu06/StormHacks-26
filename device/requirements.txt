@@ -4,8 +4,8 @@ google-genai
 python-dotenv
 pytz
 
-# Milestone 3–4: Firestore + scheduler (add when the Pi person is ready)
-# firebase-admin
+# Milestone 3–4: Firestore + scheduler
+firebase-admin
 # APScheduler
 
 # Milestone 1: speech (Pi person adds these)
