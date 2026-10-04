@@ -9,6 +9,7 @@ import Eyes from '../../assets/home/dog-eyes.svg';
 import Mouth from '../../assets/home/dog-mouth.svg';
 import YellowBody from '../../assets/home/yellow-body.svg';
 import YellowBodyExpanded from '../../assets/home/yellow-body-expanded.svg';
+import ActivityYellowBody from '../../assets/activity/yellow-body.svg';
 import YellowHead from '../../assets/home/yellow-head.svg';
 import YellowLeftEar from '../../assets/home/yellow-ear-left.svg';
 import YellowRightEar from '../../assets/home/yellow-ear-right.svg';
@@ -16,10 +17,10 @@ import YellowRightEar from '../../assets/home/yellow-ear-right.svg';
 function Layer({ asset: Asset, left, top, transform }: { asset: ComponentType<SvgProps>; left: number; top: number; transform?: ViewStyle['transform'] }) {
   return <View style={{ position: 'absolute', left, top, transform }}><Asset /></View>;
 }
-export function HomeDog({ yellow = false, expanded = false }: { yellow?: boolean; expanded?: boolean }) {
+export function HomeDog({ yellow = false, expanded = false, activity = false }: { yellow?: boolean; expanded?: boolean; activity?: boolean }) {
   if (yellow) return <View style={{ width: 64, height: 84 }} accessible={false}>
     <Layer asset={YellowRightEar} left={41.65} top={1.19} transform={[{ rotate: '-12.47deg' }]} />
-    <Layer asset={expanded ? YellowBodyExpanded : YellowBody} left={0} top={37.38} />
+    <Layer asset={activity ? ActivityYellowBody : expanded ? YellowBodyExpanded : YellowBody} left={0} top={37.38} />
     <Layer asset={YellowHead} left={9.38} top={9.04} />
     <Layer asset={Eyes} left={31.08} top={24.03} />
     <View style={{ position: 'absolute', left: 28.93, top: 28.59, width: 20.524, height: 14.66, borderRadius: 13.18, backgroundColor: '#fdeec3' }} />

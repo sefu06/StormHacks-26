@@ -1,4 +1,4 @@
-import { router, useLocalSearchParams } from 'expo-router';
+import { router } from 'expo-router';
 import { useState } from 'react';
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -25,8 +25,7 @@ export default function Home() {
   const { height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const [expanded, setExpanded] = useState(false);
-  const params = useLocalSearchParams<{ panel?: string }>();
-  const [panel, setPanel] = useState<Panel>(() => params.panel === 'notifications' ? 'notifications' : null);
+  const [panel, setPanel] = useState<Panel>(null);
   const [selectedId, setSelectedId] = useState('');
   const activeNav = panel === 'notifications' ? 'notifications' : panel === 'people' || panel === 'recipient' ? 'people' : 'home';
   const people = state.recipients.length ? state.recipients : demoPeople;
@@ -72,7 +71,7 @@ export default function Home() {
       </>}
       <Pressable accessibilityRole="button" accessibilityLabel={expanded ? 'Collapse medication actions' : 'Expand medication actions'} accessibilityState={{ expanded }} onPress={() => setExpanded((value) => !value)} style={[s.pill, { right: 0, bottom: 0 }]}>{expanded ? <PillExpanded /> : <Pill />}</Pressable>
     </View>
-    <BottomNav active={activeNav} onReminders={() => { setExpanded(false); setPanel('notifications'); }} />
+    <BottomNav active={activeNav} />
     <Modal visible={panel !== null} transparent animationType="slide" onRequestClose={() => setPanel(null)}>
       <View style={{ flex: 1, justifyContent: 'flex-end' }}><Pressable onPress={() => setPanel(null)} accessibilityLabel="Close panel" style={[StyleSheet.absoluteFill, { backgroundColor: '#0006' }]} /><View style={{ height: height * 0.8, backgroundColor: '#fff', borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 24, paddingBottom: insets.bottom + 24 }}><View style={s.heading}><Text style={[styles.title, { fontSize: 24 }]}>{panelTitle}</Text><CloseButton label="Close panel" onPress={() => setPanel(null)} /></View><ScrollView contentContainerStyle={{ gap: 16 }}>
         {panel === 'people' || panel === 'choose' ? <>{state.recipients.map((person) => <Button key={person.id} title={person.name} onPress={() => panel === 'choose' ? addMedication(person.id) : (setSelectedId(person.id), setPanel('recipient'))} />)}<Button title="Add Care Recipient" onPress={() => { setPanel(null); router.push('/setup/care-recipient'); }} /></> : null}

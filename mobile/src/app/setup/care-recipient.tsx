@@ -2,7 +2,7 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { Alert, Pressable, Text, View } from 'react-native';
 import Camera from '../../../assets/figma/camera.svg';
-import { Button, DateField, Field, Input, Screen, Select, styles } from '../../components/ui';
+import { Button, DateField, Field, Input, Screen, Select, SymbolIcon, styles } from '../../components/ui';
 import { useCare } from '../../lib/care-store';
 import { emptyDate, parseDate } from '../../lib/dates';
 const options = (values: string[]) => values.map((value) => ({ label: value, value }));
@@ -13,14 +13,14 @@ function Tags({ label, values, onChange }: { label: string; values: string[]; on
     <View style={[styles.row, { minHeight: 36, backgroundColor: '#d9d9d9', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 10, gap: 8 }]}>
       <View style={{ flex: 1, gap: 4 }}>
         {values.length > 0 && <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 4 }}>
-          {values.map((value) => <Pressable key={value} accessibilityLabel={`Remove ${value}`} onPress={() => onChange(values.filter((v) => v !== value))} style={{ maxWidth: '100%', backgroundColor: '#f3f3f3', borderRadius: 5, paddingHorizontal: 6, paddingVertical: 4 }}>
-          <Text style={[styles.text, { fontSize: 12, lineHeight: 16 }]}>× {value}</Text>
+          {values.map((value) => <Pressable key={value} accessibilityLabel={`Remove ${value}`} onPress={() => onChange(values.filter((v) => v !== value))} style={{ maxWidth: '100%', backgroundColor: '#f3f3f3', borderRadius: 5, paddingHorizontal: 6, paddingVertical: 4, flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+          <SymbolIcon kind="close" size={12} /><Text style={[styles.text, { fontSize: 12, lineHeight: 16, flexShrink: 1 }]}>{value}</Text>
           </Pressable>)}
         </View>}
         <Input accessibilityLabel={`Add ${label.toLowerCase()}`} placeholder={`Add ${label.toLowerCase()}`} value={entry} onChangeText={setEntry} onSubmitEditing={add} returnKeyType="done" style={{ width: '100%', height: 24, paddingHorizontal: 0 }} />
       </View>
       <Pressable onPress={add} accessibilityRole="button" accessibilityLabel={`Add ${label.toLowerCase()}`} hitSlop={10} style={{ width: 18, height: 24, alignItems: 'center', justifyContent: 'center' }}>
-        <Text style={styles.text}>+</Text>
+        <SymbolIcon kind="plus" size={18} />
       </Pressable>
     </View>
   </Field>;

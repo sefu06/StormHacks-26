@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from 'react';
 import { router, usePathname } from 'expo-router';
+import Svg, { Line } from 'react-native-svg';
 import { Picker } from '@react-native-picker/picker';
 import { KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions, type TextInputProps } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -11,7 +12,7 @@ import { months, type DateParts } from '../lib/dates';
 export const styles = StyleSheet.create({
   text: { fontFamily: 'PlusJakartaSans_400Regular', color: '#303030' },
   title: { fontFamily: 'PlusJakartaSans_400Regular', color: '#000', fontSize: 32, lineHeight: 41, marginBottom: 20 },
-  field: { gap: 5 }, label: { fontFamily: 'PlusJakartaSans_400Regular', color: '#000', fontSize: 14, lineHeight: 18 },
+  field: { gap: 5 }, label: { fontFamily: 'PlusJakartaSans_600SemiBold', color: '#000', fontSize: 14, lineHeight: 18 },
   input: { fontFamily: 'PlusJakartaSans_400Regular', fontSize: 12, color: '#505050', backgroundColor: '#d9d9d9', borderRadius: 10, height: 36, paddingHorizontal: 10, paddingVertical: 0 },
   row: { flexDirection: 'row', alignItems: 'center' },
   primary: { borderRadius: 10, backgroundColor: '#373737', minHeight: 36, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 10 },
@@ -35,9 +36,14 @@ export function Screen({ children, kind = 'form' }: { children: ReactNode; kind?
 }
 export function Field({ label, children }: { label: string; children: ReactNode }) { return <View style={styles.field}><Text style={styles.label}>{label}</Text>{children}</View>; }
 export function Input(props: TextInputProps) { return <TextInput placeholderTextColor="#878787" {...props} style={[styles.input, props.style]} />; }
+export function SymbolIcon({ kind, size = 18, color = '#303030' }: { kind: 'plus' | 'close'; size?: number; color?: string }) {
+  return <Svg width={size} height={size} viewBox="0 0 24 24" accessible={false}>
+    {kind === 'plus' ? <><Line x1={4} y1={12} x2={20} y2={12} stroke={color} strokeWidth={2} strokeLinecap="round" /><Line x1={12} y1={4} x2={12} y2={20} stroke={color} strokeWidth={2} strokeLinecap="round" /></> : <><Line x1={5} y1={5} x2={19} y2={19} stroke={color} strokeWidth={2} strokeLinecap="round" /><Line x1={19} y1={5} x2={5} y2={19} stroke={color} strokeWidth={2} strokeLinecap="round" /></>}
+  </Svg>;
+}
 export function CloseButton({ onPress, label = 'Close popup' }: { onPress: () => void; label?: string }) {
   return <Pressable accessibilityRole="button" accessibilityLabel={label} onPress={onPress} hitSlop={4} style={{ width: 44, height: 44, alignItems: 'center', justifyContent: 'center' }}>
-    <Text style={[styles.text, { fontSize: 26, lineHeight: 32 }]}>×</Text>
+    <SymbolIcon kind="close" size={26} />
   </Pressable>;
 }
 export function Button({ title, onPress, disabled = false, compact = false }: { title: string; onPress: () => void; disabled?: boolean; compact?: boolean }) { return <Pressable accessibilityRole="button" disabled={disabled} onPress={onPress} style={({ pressed }) => [styles.primary, compact && { minHeight: 23 }, { opacity: disabled ? 0.5 : pressed ? 0.8 : 1 }]}><Text style={[styles.primaryText, compact && { fontSize: 12 }]}>{title}</Text></Pressable>; }

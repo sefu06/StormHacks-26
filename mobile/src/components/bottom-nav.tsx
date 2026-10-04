@@ -1,14 +1,14 @@
 import { router } from 'expo-router';
 import { Pressable, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Bell from '../../assets/home/bell.svg';
+import Bell from '../../assets/activity/bell.svg';
 import Home from '../../assets/home/home.svg';
 import People from '../../assets/home/people.svg';
 
-export function BottomNav({ active, onReminders }: { active: 'home' | 'people' | 'notifications'; onReminders?: () => void }) {
+export function BottomNav({ active }: { active: 'home' | 'people' | 'notifications' }) {
   const insets = useSafeAreaInsets();
   const items = [
-    { key: 'notifications', label: 'Medication reminders', Icon: Bell, press: onReminders ?? (() => router.replace({ pathname: '/home', params: { panel: 'notifications' } })) },
+    { key: 'notifications', label: 'Activity', Icon: Bell, press: () => router.replace('/activity') },
     { key: 'home', label: 'Home', Icon: Home, press: () => router.replace('/home') },
     { key: 'people', label: 'People', Icon: People, press: () => router.replace('/people') },
   ];
