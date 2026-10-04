@@ -166,8 +166,7 @@ export default function CareRecipientSetupPage() {
               <option value="">Select an option</option>
               <option>Female</option>
               <option>Male</option>
-              <option>Non-binary</option>
-              <option>Prefer not to say</option>
+              <option>Other</option>
             </SelectField>
           </div>
 

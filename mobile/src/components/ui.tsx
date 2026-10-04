@@ -5,6 +5,7 @@ import { KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleShee
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Chevron from '../../assets/figma/chevron-date.svg';
 import SmallChevron from '../../assets/figma/chevron-small.svg';
+import SetupChevron from '../../assets/figma/setup-chevron.svg';
 import { months, type DateParts } from '../lib/dates';
 
 export const styles = StyleSheet.create({
@@ -29,9 +30,9 @@ export function Screen({ children, kind = 'form' }: { children: ReactNode; kind?
 export function Field({ label, children }: { label: string; children: ReactNode }) { return <View style={styles.field}><Text style={styles.label}>{label}</Text>{children}</View>; }
 export function Input(props: TextInputProps) { return <TextInput placeholderTextColor="#878787" {...props} style={[styles.input, props.style]} />; }
 export function Button({ title, onPress, disabled = false, compact = false }: { title: string; onPress: () => void; disabled?: boolean; compact?: boolean }) { return <Pressable accessibilityRole="button" disabled={disabled} onPress={onPress} style={({ pressed }) => [styles.primary, compact && { minHeight: 23 }, { opacity: disabled ? 0.5 : pressed ? 0.8 : 1 }]}><Text style={[styles.primaryText, compact && { fontSize: 12 }]}>{title}</Text></Pressable>; }
-export function Select({ label, value, onChange, options, placeholder = 'Select', small = false }: { label: string; value: string; onChange: (value: string) => void; options: { label: string; value: string }[]; placeholder?: string; small?: boolean }) {
+export function Select({ label, value, onChange, options, placeholder = 'Select', small = false, inline = false }: { label: string; value: string; onChange: (value: string) => void; options: { label: string; value: string }[]; placeholder?: string; small?: boolean; inline?: boolean }) {
   const [open, setOpen] = useState(false);
-  return <><Pressable accessibilityRole="button" accessibilityLabel={`${label}: ${value || placeholder}`} onPress={() => setOpen(true)} style={[styles.row, { height: 36, backgroundColor: '#d9d9d9', borderRadius: 10, paddingHorizontal: 10, justifyContent: 'space-between', gap: 4 }]}><Text style={[styles.text, { fontSize: 12, color: value ? '#505050' : '#878787' }]}>{options.find((o) => o.value === value)?.label || placeholder}</Text>{small ? <SmallChevron /> : <Chevron />}</Pressable>
+  return <><Pressable accessibilityRole="button" accessibilityLabel={`${label}: ${value || placeholder}`} hitSlop={inline ? 10 : undefined} onPress={() => setOpen(true)} style={[styles.row, { height: 36, backgroundColor: '#d9d9d9', borderRadius: 10, paddingHorizontal: 10, justifyContent: 'space-between', gap: 4 }, inline && { width: 88, height: 24, borderRadius: 5, paddingRight: 6 }]}><Text numberOfLines={inline ? 1 : undefined} style={[styles.text, { fontSize: 12, color: value ? '#505050' : '#878787' }, inline && { flex: 1 }]}>{options.find((o) => o.value === value)?.label || placeholder}</Text>{inline ? <SetupChevron /> : small ? <SmallChevron /> : <Chevron />}</Pressable>
     <Modal visible={open} transparent animationType="slide" onRequestClose={() => setOpen(false)}><View style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: '#0005' }}><Pressable style={{ flex: 1 }} onPress={() => setOpen(false)} accessibilityLabel="Close selection" /><SafeAreaView edges={['bottom']} style={{ backgroundColor: '#fff', padding: 20 }}><Text style={styles.label}>{label}</Text><Picker selectedValue={value} onValueChange={(v) => onChange(String(v))}><Picker.Item label={placeholder} value="" />{options.map((o) => <Picker.Item key={o.value} label={o.label} value={o.value} />)}</Picker><Button title="Done" onPress={() => setOpen(false)} /></SafeAreaView></View></Modal>
   </>;
 }

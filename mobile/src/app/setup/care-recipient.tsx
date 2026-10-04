@@ -9,7 +9,21 @@ const options = (values: string[]) => values.map((value) => ({ label: value, val
 function Tags({ label, values, onChange }: { label: string; values: string[]; onChange: (values: string[]) => void }) {
   const [entry, setEntry] = useState('');
   const add = () => { const value = entry.trim(); if (value && !values.includes(value)) onChange([...values, value]); setEntry(''); };
-  return <Field label={label}><View style={{ backgroundColor: '#d9d9d9', padding: 8, borderRadius: 10, gap: 6 }}><View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 4 }}>{values.map((value) => <Pressable key={value} accessibilityLabel={`Remove ${value}`} onPress={() => onChange(values.filter((v) => v !== value))} style={{ backgroundColor: '#f3f3f3', borderRadius: 5, padding: 4 }}><Text style={[styles.text, { fontSize: 12 }]}>× {value}</Text></Pressable>)}</View><View style={styles.row}><Input accessibilityLabel={`Add ${label.toLowerCase()}`} placeholder={`Add ${label.toLowerCase()}`} value={entry} onChangeText={setEntry} onSubmitEditing={add} style={{ flex: 1 }} /><Pressable onPress={add} accessibilityRole="button" accessibilityLabel={`Add ${label.toLowerCase()}`} style={{ padding: 8 }}><Text style={styles.text}>+</Text></Pressable></View></View></Field>;
+  return <Field label={label}>
+    <View style={[styles.row, { minHeight: 36, backgroundColor: '#d9d9d9', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 10, gap: 8 }]}>
+      <View style={{ flex: 1, gap: 4 }}>
+        {values.length > 0 && <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 4 }}>
+          {values.map((value) => <Pressable key={value} accessibilityLabel={`Remove ${value}`} onPress={() => onChange(values.filter((v) => v !== value))} style={{ maxWidth: '100%', backgroundColor: '#f3f3f3', borderRadius: 5, paddingHorizontal: 6, paddingVertical: 4 }}>
+          <Text style={[styles.text, { fontSize: 12, lineHeight: 16 }]}>× {value}</Text>
+          </Pressable>)}
+        </View>}
+        <Input accessibilityLabel={`Add ${label.toLowerCase()}`} placeholder={`Add ${label.toLowerCase()}`} value={entry} onChangeText={setEntry} onSubmitEditing={add} returnKeyType="done" style={{ width: '100%', height: 24, paddingHorizontal: 0 }} />
+      </View>
+      <Pressable onPress={add} accessibilityRole="button" accessibilityLabel={`Add ${label.toLowerCase()}`} hitSlop={10} style={{ width: 18, height: 24, alignItems: 'center', justifyContent: 'center' }}>
+        <Text style={styles.text}>+</Text>
+      </Pressable>
+    </View>
+  </Field>;
 }
 export default function Setup() {
   const { saveRecipient } = useCare();
@@ -29,11 +43,24 @@ export default function Setup() {
   return <Screen kind="setup"><View style={{ alignSelf: 'center', marginBottom: 23 }}><Camera /></View><View style={{ gap: 20 }}>
     <Field label="Name"><Input accessibilityLabel="Name" placeholder="Enter name" value={name} onChangeText={setName} autoCapitalize="words" /></Field>
     <DateField label="Date of Birth" value={birth} onChange={setBirth} />
-    <Field label="Sex"><Select label="Sex" value={sex} onChange={setSex} options={options(['Female', 'Male', 'Non-binary', 'Prefer not to say'])} /></Field>
-    <Field label="Care recipient is pregnant?"><Select label="Pregnancy status" value={pregnant} onChange={setPregnant} options={options(['No', 'Yes', 'Not applicable'])} /></Field>
+    <Field label="Sex"><Select label="Sex" value={sex} onChange={setSex} options={options(['Female', 'Male', 'Other'])} /></Field>
+    <View style={[styles.row, { justifyContent: 'space-between', gap: 12 }]}>
+      <Text style={[styles.label, { flex: 1 }]}>Care recipient is pregnant?</Text>
+      <Select inline label="Pregnancy status" value={pregnant} onChange={setPregnant} options={options(['No', 'Yes', 'Not applicable'])} />
+    </View>
     <Field label="Blood Type"><Select label="Blood type" value={bloodType} onChange={setBloodType} options={options(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'])} /></Field>
-    <Field label="Height"><Input accessibilityLabel="Height in cm" placeholder="Enter height (cm)" keyboardType="decimal-pad" value={height} onChangeText={setHeight} /></Field>
-    <Field label="Weight"><Input accessibilityLabel="Weight in kg" placeholder="Enter weight (kg)" keyboardType="decimal-pad" value={weight} onChangeText={setWeight} /></Field>
+    <Field label="Height">
+      <View style={[styles.row, { backgroundColor: '#d9d9d9', borderRadius: 10 }]}>
+        <Input accessibilityLabel="Height in cm" placeholder="Enter height" keyboardType="decimal-pad" value={height} onChangeText={setHeight} style={{ flex: 1 }} />
+        <Text style={[styles.text, { fontSize: 12, color: '#505050', paddingRight: 10 }]}>cm</Text>
+      </View>
+    </Field>
+    <Field label="Weight">
+      <View style={[styles.row, { backgroundColor: '#d9d9d9', borderRadius: 10 }]}>
+        <Input accessibilityLabel="Weight in kg" placeholder="Enter weight" keyboardType="decimal-pad" value={weight} onChangeText={setWeight} style={{ flex: 1 }} />
+        <Text style={[styles.text, { fontSize: 12, color: '#505050', paddingRight: 10 }]}>kg</Text>
+      </View>
+    </Field>
     <Tags label="Conditions" values={conditions} onChange={setConditions} /><Tags label="Allergies" values={allergies} onChange={setAllergies} />
     {!!error && <Text style={styles.error} accessibilityRole="alert">{error}</Text>}<Button title={busy ? 'Saving…' : 'Save and Continue'} disabled={busy} onPress={save} />
   </View></Screen>;
