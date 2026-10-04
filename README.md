@@ -1,2 +1,2 @@
 # StormHacks-26
-repo fro stormhacks 2026 project
+repo for stormhacks 2026 project
