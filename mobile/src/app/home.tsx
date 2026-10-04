@@ -1,10 +1,7 @@
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Bell from '../../assets/home/bell.svg';
-import HomeIcon from '../../assets/home/home.svg';
-import PeopleIcon from '../../assets/home/people.svg';
 import Pill from '../../assets/home/pill.svg';
 import PillExpanded from '../../assets/home/pill-expanded.svg';
 import Plus from '../../assets/home/plus.svg';
@@ -15,8 +12,9 @@ import BubbleRight from '../../assets/home/bubble-right.svg';
 import BubbleLeft from '../../assets/home/bubble-left.svg';
 import AlertIcon from '../../assets/home/alert.svg';
 import Check from '../../assets/home/check.svg';
+import { BottomNav } from '../components/bottom-nav';
 import { HomeDog } from '../components/home-dogs';
-import { Button, styles } from '../components/ui';
+import { Button, CloseButton, styles } from '../components/ui';
 import { useCare, type Recipient } from '../lib/care-store';
 import { displayTime } from '../lib/dates';
 
@@ -27,8 +25,10 @@ export default function Home() {
   const { height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const [expanded, setExpanded] = useState(false);
-  const [panel, setPanel] = useState<Panel>(null);
+  const params = useLocalSearchParams<{ panel?: string }>();
+  const [panel, setPanel] = useState<Panel>(() => params.panel === 'notifications' ? 'notifications' : null);
   const [selectedId, setSelectedId] = useState('');
+  const activeNav = panel === 'notifications' ? 'notifications' : panel === 'people' || panel === 'recipient' ? 'people' : 'home';
   const people = state.recipients.length ? state.recipients : demoPeople;
   const selected = state.recipients.find((person) => person.id === selectedId);
   const now = new Date();
@@ -72,13 +72,9 @@ export default function Home() {
       </>}
       <Pressable accessibilityRole="button" accessibilityLabel={expanded ? 'Collapse medication actions' : 'Expand medication actions'} accessibilityState={{ expanded }} onPress={() => setExpanded((value) => !value)} style={[s.pill, { right: 0, bottom: 0 }]}>{expanded ? <PillExpanded /> : <Pill />}</Pressable>
     </View>
-    <View style={[s.nav, { bottom: Math.max(40, insets.bottom + 6) }]}>
-      <Pressable accessibilityRole="button" accessibilityLabel="Medication reminders" onPress={() => { setExpanded(false); setPanel('notifications'); }}><Bell /></Pressable>
-      <Pressable accessibilityRole="button" accessibilityLabel="Home" onPress={() => { setExpanded(false); setPanel(null); }}><HomeIcon /></Pressable>
-      <Pressable accessibilityRole="button" accessibilityLabel="People" onPress={() => { setExpanded(false); setPanel('people'); }}><PeopleIcon /></Pressable>
-    </View>
+    <BottomNav active={activeNav} onReminders={() => { setExpanded(false); setPanel('notifications'); }} />
     <Modal visible={panel !== null} transparent animationType="slide" onRequestClose={() => setPanel(null)}>
-      <View style={{ flex: 1, justifyContent: 'flex-end' }}><Pressable onPress={() => setPanel(null)} accessibilityLabel="Close panel" style={[StyleSheet.absoluteFill, { backgroundColor: '#0006' }]} /><View style={{ height: height * 0.8, backgroundColor: '#fff', borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 24, paddingBottom: insets.bottom + 24 }}><View style={s.heading}><Text style={[styles.title, { fontSize: 24 }]}>{panelTitle}</Text><Pressable accessibilityRole="button" accessibilityLabel="Close panel" onPress={() => setPanel(null)} style={{ padding: 10 }}><Text style={styles.text}>×</Text></Pressable></View><ScrollView contentContainerStyle={{ gap: 16 }}>
+      <View style={{ flex: 1, justifyContent: 'flex-end' }}><Pressable onPress={() => setPanel(null)} accessibilityLabel="Close panel" style={[StyleSheet.absoluteFill, { backgroundColor: '#0006' }]} /><View style={{ height: height * 0.8, backgroundColor: '#fff', borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 24, paddingBottom: insets.bottom + 24 }}><View style={s.heading}><Text style={[styles.title, { fontSize: 24 }]}>{panelTitle}</Text><CloseButton label="Close panel" onPress={() => setPanel(null)} /></View><ScrollView contentContainerStyle={{ gap: 16 }}>
         {panel === 'people' || panel === 'choose' ? <>{state.recipients.map((person) => <Button key={person.id} title={person.name} onPress={() => panel === 'choose' ? addMedication(person.id) : (setSelectedId(person.id), setPanel('recipient'))} />)}<Button title="Add Care Recipient" onPress={() => { setPanel(null); router.push('/setup/care-recipient'); }} /></> : null}
         {panel === 'profile' ? <Text style={styles.text}>CareCompanion{ '\n\n' }{state.recipients.length} care recipients{ '\n' }{state.medications.length} saved medications</Text> : null}
         {panel === 'recipient' && selected ? <>{personDetails(selected).map(([label, value]) => value ? <View key={label}><Text style={styles.label}>{label}</Text><Text style={styles.text}>{value}</Text></View> : null)}<Button title="Add Medication" onPress={() => addMedication(selected.id)} /></> : null}
@@ -92,7 +88,8 @@ const s = StyleSheet.create({
   heading: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }, headingText: { fontFamily: 'PlusJakartaSans_700Bold', fontSize: 26, color: '#000', lineHeight: 33 },
   bubble: { width: 203, height: 75.746, borderRadius: 15.867, paddingHorizontal: 16.664, justifyContent: 'center', gap: 4 },
   statusRow: { flexDirection: 'row', alignItems: 'center', gap: 4 }, statusText: { fontFamily: 'PlusJakartaSans_500Medium', fontSize: 10.604, color: '#000', flexShrink: 1 }, statusLabel: { fontFamily: 'PlusJakartaSans_600SemiBold' },
-  personBar: { position: 'absolute', left: 0, right: 0, height: 41, borderRadius: 10, backgroundColor: '#d9d9d9', paddingHorizontal: 10, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }, personName: { fontFamily: 'Allerta_400Regular', fontSize: 12, color: '#505050', flexShrink: 1 },
-  nav: { position: 'absolute', alignSelf: 'center', flexDirection: 'row', gap: 42, borderRadius: 20, backgroundColor: '#f3f3f3', paddingHorizontal: 24, paddingVertical: 10 },
+  personBar: { position: 'absolute', left: 0, right: 0, height: 41, borderRadius: 10, backgroundColor: '#d9d9d9', paddingHorizontal: 10, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }, personName: { fontFamily: 'PlusJakartaSans_400Regular', fontSize: 12, color: '#505050', flexShrink: 1 },
+  nav: { position: 'absolute', alignSelf: 'center', flexDirection: 'row', alignItems: 'center', gap: 42, borderRadius: 20, backgroundColor: '#f3f3f3', paddingHorizontal: 18, paddingVertical: 6 },
+  navActive: { backgroundColor: '#d9d9d9', borderRadius: 30, padding: 8 },
   pill: { position: 'absolute', width: 54, height: 54, backgroundColor: '#e18f3f', borderRadius: 27, padding: 12 }, action: { position: 'absolute', width: 40, height: 40, backgroundColor: '#eca662', borderRadius: 27, alignItems: 'center', justifyContent: 'center' },
 });

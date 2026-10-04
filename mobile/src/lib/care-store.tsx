@@ -6,7 +6,7 @@ export type Medication = { id: string; recipientId: string; name: string; dosage
 type CareState = { recipients: Recipient[]; medications: Medication[] };
 const empty: CareState = { recipients: [], medications: [] };
 const key = 'carecompanion.native.v1';
-const Context = createContext<{ state: CareState; ready: boolean; error: string; saveRecipient: (recipient: Omit<Recipient, 'id'>) => Promise<string>; saveMedication: (medication: Omit<Medication, 'id'>) => Promise<void> } | null>(null);
+const Context = createContext<{ state: CareState; ready: boolean; error: string; saveRecipient: (recipient: Omit<Recipient, 'id'>) => Promise<string>; saveMedication: (medication: Omit<Medication, 'id'>) => Promise<void>; removeRecipient: (id: string) => Promise<void> } | null>(null);
 
 export function CareProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<CareState>(empty);
@@ -32,6 +32,9 @@ export function CareProvider({ children }: { children: ReactNode }) {
     if (!state.recipients.some(({ id }) => id === medication.recipientId)) throw Error('Choose a care recipient first.');
     await persist({ ...state, medications: [...state.medications, { ...medication, id: `medication-${Date.now()}` }] });
   }
-  return <Context.Provider value={{ state, ready, error, saveRecipient, saveMedication }}>{children}</Context.Provider>;
+  async function removeRecipient(id: string) {
+    await persist({ recipients: state.recipients.filter((person) => person.id !== id), medications: state.medications.filter((medication) => medication.recipientId !== id) });
+  }
+  return <Context.Provider value={{ state, ready, error, saveRecipient, saveMedication, removeRecipient }}>{children}</Context.Provider>;
 }
 export function useCare() { const value = useContext(Context); if (!value) throw Error('Missing CareProvider'); return value; }

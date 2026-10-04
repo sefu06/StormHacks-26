@@ -9,14 +9,14 @@ import SetupChevron from '../../assets/figma/setup-chevron.svg';
 import { months, type DateParts } from '../lib/dates';
 
 export const styles = StyleSheet.create({
-  text: { fontFamily: 'Allerta_400Regular', color: '#303030' },
-  title: { fontFamily: 'Allerta_400Regular', color: '#000', fontSize: 32, lineHeight: 41, marginBottom: 20 },
-  field: { gap: 5 }, label: { fontFamily: 'Allerta_400Regular', color: '#000', fontSize: 14, lineHeight: 18 },
-  input: { fontFamily: 'Allerta_400Regular', fontSize: 12, color: '#505050', backgroundColor: '#d9d9d9', borderRadius: 10, height: 36, paddingHorizontal: 10, paddingVertical: 0 },
+  text: { fontFamily: 'PlusJakartaSans_400Regular', color: '#303030' },
+  title: { fontFamily: 'PlusJakartaSans_400Regular', color: '#000', fontSize: 32, lineHeight: 41, marginBottom: 20 },
+  field: { gap: 5 }, label: { fontFamily: 'PlusJakartaSans_400Regular', color: '#000', fontSize: 14, lineHeight: 18 },
+  input: { fontFamily: 'PlusJakartaSans_400Regular', fontSize: 12, color: '#505050', backgroundColor: '#d9d9d9', borderRadius: 10, height: 36, paddingHorizontal: 10, paddingVertical: 0 },
   row: { flexDirection: 'row', alignItems: 'center' },
   primary: { borderRadius: 10, backgroundColor: '#373737', minHeight: 36, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 10 },
-  primaryText: { fontFamily: 'Allerta_400Regular', fontSize: 14, color: '#fff' },
-  error: { fontFamily: 'Allerta_400Regular', color: '#a12e24', fontSize: 12, lineHeight: 18 },
+  primaryText: { fontFamily: 'PlusJakartaSans_400Regular', fontSize: 14, color: '#fff' },
+  error: { fontFamily: 'PlusJakartaSans_400Regular', color: '#a12e24', fontSize: 12, lineHeight: 18 },
 });
 export function Screen({ children, kind = 'form' }: { children: ReactNode; kind?: 'search' | 'form' | 'setup' }) {
   const { height } = useWindowDimensions();
@@ -35,11 +35,16 @@ export function Screen({ children, kind = 'form' }: { children: ReactNode; kind?
 }
 export function Field({ label, children }: { label: string; children: ReactNode }) { return <View style={styles.field}><Text style={styles.label}>{label}</Text>{children}</View>; }
 export function Input(props: TextInputProps) { return <TextInput placeholderTextColor="#878787" {...props} style={[styles.input, props.style]} />; }
+export function CloseButton({ onPress, label = 'Close popup' }: { onPress: () => void; label?: string }) {
+  return <Pressable accessibilityRole="button" accessibilityLabel={label} onPress={onPress} hitSlop={4} style={{ width: 44, height: 44, alignItems: 'center', justifyContent: 'center' }}>
+    <Text style={[styles.text, { fontSize: 26, lineHeight: 32 }]}>×</Text>
+  </Pressable>;
+}
 export function Button({ title, onPress, disabled = false, compact = false }: { title: string; onPress: () => void; disabled?: boolean; compact?: boolean }) { return <Pressable accessibilityRole="button" disabled={disabled} onPress={onPress} style={({ pressed }) => [styles.primary, compact && { minHeight: 23 }, { opacity: disabled ? 0.5 : pressed ? 0.8 : 1 }]}><Text style={[styles.primaryText, compact && { fontSize: 12 }]}>{title}</Text></Pressable>; }
 export function Select({ label, value, onChange, options, placeholder = 'Select', small = false, inline = false }: { label: string; value: string; onChange: (value: string) => void; options: { label: string; value: string }[]; placeholder?: string; small?: boolean; inline?: boolean }) {
   const [open, setOpen] = useState(false);
   return <><Pressable accessibilityRole="button" accessibilityLabel={`${label}: ${value || placeholder}`} hitSlop={inline ? 10 : undefined} onPress={() => setOpen(true)} style={[styles.row, { height: 36, backgroundColor: '#d9d9d9', borderRadius: 10, paddingHorizontal: 10, justifyContent: 'space-between', gap: 4 }, inline && { width: 88, height: 24, borderRadius: 5, paddingRight: 6 }]}><Text numberOfLines={inline ? 1 : undefined} style={[styles.text, { fontSize: 12, color: value ? '#505050' : '#878787' }, inline && { flex: 1 }]}>{options.find((o) => o.value === value)?.label || placeholder}</Text>{inline ? <SetupChevron /> : small ? <SmallChevron /> : <Chevron />}</Pressable>
-    <Modal visible={open} transparent animationType="slide" onRequestClose={() => setOpen(false)}><View style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: '#0005' }}><Pressable style={{ flex: 1 }} onPress={() => setOpen(false)} accessibilityLabel="Close selection" /><SafeAreaView edges={['bottom']} style={{ backgroundColor: '#fff', padding: 20 }}><Text style={styles.label}>{label}</Text><Picker selectedValue={value} onValueChange={(v) => onChange(String(v))}><Picker.Item label={placeholder} value="" />{options.map((o) => <Picker.Item key={o.value} label={o.label} value={o.value} />)}</Picker><Button title="Done" onPress={() => setOpen(false)} /></SafeAreaView></View></Modal>
+    <Modal visible={open} transparent animationType="slide" onRequestClose={() => setOpen(false)}><View style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: '#0005' }}><Pressable style={{ flex: 1 }} onPress={() => setOpen(false)} accessibilityLabel="Close selection" /><SafeAreaView edges={['bottom']} style={{ backgroundColor: '#fff', padding: 20 }}><Text style={styles.label}>{label}</Text><Picker itemStyle={{ fontFamily: 'PlusJakartaSans_400Regular' }} selectedValue={value} onValueChange={(v) => onChange(String(v))}><Picker.Item fontFamily="PlusJakartaSans_400Regular" label={placeholder} value="" />{options.map((o) => <Picker.Item fontFamily="PlusJakartaSans_400Regular" key={o.value} label={o.label} value={o.value} />)}</Picker><Button title="Done" onPress={() => setOpen(false)} /></SafeAreaView></View></Modal>
   </>;
 }
 export function DateField({ label, value, onChange }: { label: string; value: DateParts; onChange: (value: DateParts) => void }) { return <Field label={label}><View style={[styles.row, { backgroundColor: '#d9d9d9', borderRadius: 10 }]}><View style={{ flex: 2 }}><Select label={`${label} month`} value={value.month} placeholder="Month" options={months.map((m, i) => ({ label: m, value: String(i + 1) }))} onChange={(month) => onChange({ ...value, month })} /></View><Input accessibilityLabel={`${label} day`} style={{ flex: 1, borderRadius: 0, borderLeftWidth: 1, borderRightWidth: 1, borderColor: '#afafaf' }} placeholder="Day" keyboardType="number-pad" maxLength={2} value={value.day} onChangeText={(day) => onChange({ ...value, day })} /><Input accessibilityLabel={`${label} year`} style={{ flex: 1 }} placeholder="Year" keyboardType="number-pad" maxLength={4} value={value.year} onChangeText={(year) => onChange({ ...value, year })} /></View></Field>; }

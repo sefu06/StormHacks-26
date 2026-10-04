@@ -1,6 +1,6 @@
 "use client";
 
-import { Allerta } from "next/font/google";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import { useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 
@@ -8,7 +8,7 @@ import { useCareData } from "@/components/care-data-provider";
 import { cephalexinInformation, medicationCatalog } from "@/lib/medication-catalog";
 import styles from "./page.module.css";
 
-const allerta = Allerta({ weight: "400", subsets: ["latin"], display: "swap" });
+const plusJakartaSans = Plus_Jakarta_Sans({ weight: "400", subsets: ["latin"], display: "swap" });
 const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 type DateParts = { month: string; day: string; year: string };
 const emptyDate: DateParts = { month: "", day: "", year: "" };
@@ -109,7 +109,7 @@ export default function AddMedicationPage() {
   }
 
   return (
-    <main className={`${styles.screen} ${step === "prescription" ? styles.prescriptionScreen : ""} ${allerta.className}`}>
+    <main className={`${styles.screen} ${step === "prescription" ? styles.prescriptionScreen : ""} ${plusJakartaSans.className}`}>
       <section className={styles.content} aria-labelledby="add-medication-title">
         <h1 id="add-medication-title" className={step === "prescription" ? styles.medicationTitle : ""}>{step === "prescription" ? selected : "Add Medication"}</h1>
         {step !== "prescription" ? <>
