@@ -1,3 +1,5 @@
+import Alarm from '../../assets/home/alarm.svg';
+import { isRecentlyMissed } from '../lib/recent-missed';
 import ActionClose from '../../assets/home/action-close.svg';
 import { router } from 'expo-router';
 import { useState } from 'react';
@@ -55,13 +57,15 @@ export default function Home() {
           const missed = saved.filter((m) => (m.status ?? 'Missed') === 'Missed' && m.startDate <= today && (!m.endDate || m.endDate >= today));
           const taken = saved.filter((m) => m.status === 'Taken');
           const demo = !state.recipients.length;
-          return <View key={person.id} style={{ height: yellow ? 128 : 131 }}>
+          const showRemind = demo ? index === 0 : saved.some((medication) => isRecentlyMissed(medication, now));
+          return <View key={person.id} style={{ height: (yellow ? 128 : 131) + (showRemind ? 30 : 0) }}>
             <View style={{ position: 'absolute', left: yellow ? 79 : 183.5, top: 11.5, transform: yellow ? [{ scaleX: -1 }] : undefined }}>{yellow ? <BubbleLeft /> : <BubbleRight />}</View>
             <View style={[s.bubble, { alignSelf: yellow ? 'flex-end' : 'flex-start', backgroundColor: yellow ? '#ffefc1' : '#ffd6ae' }]}>
-              <View style={s.statusRow}><AlertIcon /><Text numberOfLines={1} style={[s.statusText, demo && { flexShrink: 0 }]}><Text style={s.statusLabel}>Missed:</Text> {demo ? 'Lisopril, 10mg tablet' : missed[0] ? `${missed[0].name}, ${missed[0].dosage}` : 'None'}</Text></View>
+              <View style={s.statusRow}><AlertIcon /><Text numberOfLines={1} style={[s.statusText, demo && { flexShrink: 0 }]}><Text style={s.statusLabel}>Missed:</Text> {demo ? (index === 0 ? 'Lisopril, 10mg tablet' : 'None') : missed[0] ? `${missed[0].name}, ${missed[0].dosage}` : 'None'}</Text></View>
               <View style={s.statusRow}><Check /><Text numberOfLines={1} style={[s.statusText, demo && { flexShrink: 0 }]}><Text style={s.statusLabel}>Taken:</Text> {demo ? 'Vyvanse, 10mg capsule' : taken[0] ? `${taken[0].name}, ${taken[0].dosage}` : 'None'}</Text></View>
             </View>
-            <Pressable accessibilityRole="button" accessibilityLabel={`View ${person.name}`} onPress={() => { setSelectedId(person.id); setPanel('recipient'); }} style={[s.personBar, { top: yellow ? 87 : 90 }]}><Text numberOfLines={1} style={s.personName}>{person.name}</Text><View style={{ transform: [{ rotate: '-90deg' }] }}><Chevron /></View></Pressable>
+            <Pressable accessibilityRole="button" accessibilityLabel={`View ${person.name}`} onPress={() => { setSelectedId(person.id); setPanel('recipient'); }} style={[s.personBar, { top: yellow ? 87 : 90 }, showRemind && { borderBottomLeftRadius: 0, borderBottomRightRadius: 0 }]}><Text numberOfLines={1} style={s.personName}>{person.name}</Text><View style={{ transform: [{ rotate: '-90deg' }] }}><Chevron /></View></Pressable>
+            {showRemind && <Pressable accessibilityRole="button" accessibilityLabel={`Remind ${person.name}`} onPress={() => {}} style={[s.remind, { top: yellow ? 128 : 131 }]}><View style={{ width: 14, height: 14, overflow: 'hidden' }}><View style={{ left: -0.5, top: -1 }}><Alarm /></View></View><Text style={s.remindText}>Remind</Text></Pressable>}
             <View pointerEvents="none" style={{ position: 'absolute', left: yellow ? 13 : 235, top: yellow ? 7.91 : 19 }}><HomeDog yellow={yellow} expanded={expanded} /></View>
           </View>;
         })}</View>
@@ -92,6 +96,8 @@ const s = StyleSheet.create({
   bubble: { width: 203, height: 75.746, borderRadius: 15.867, paddingHorizontal: 16.664, justifyContent: 'center', gap: 4 },
   statusRow: { flexDirection: 'row', alignItems: 'center', gap: 4 }, statusText: { fontFamily: 'PlusJakartaSans_500Medium', fontSize: 10.604, color: '#000', flexShrink: 1 }, statusLabel: { fontFamily: 'PlusJakartaSans_600SemiBold' },
   personBar: { position: 'absolute', left: 0, right: 0, height: 41, borderRadius: 10, backgroundColor: '#d9d9d9', paddingHorizontal: 10, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }, personName: { fontFamily: 'PlusJakartaSans_400Regular', fontSize: 12, color: '#505050', flexShrink: 1 },
+  remind: { position: 'absolute', left: 0, right: 0, height: 30, backgroundColor: '#e18f3f', borderBottomLeftRadius: 10, borderBottomRightRadius: 10, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4 },
+  remindText: { fontFamily: 'PlusJakartaSans_600SemiBold', fontSize: 10, color: '#fff' },
   nav: { position: 'absolute', alignSelf: 'center', flexDirection: 'row', alignItems: 'center', gap: 42, borderRadius: 20, backgroundColor: '#f3f3f3', paddingHorizontal: 18, paddingVertical: 6 },
   navActive: { backgroundColor: '#d9d9d9', borderRadius: 30, padding: 8 },
   pill: { position: 'absolute', width: 54, height: 54, backgroundColor: '#e18f3f', borderRadius: 27, padding: 12, alignItems: 'center', justifyContent: 'center' }, action: { position: 'absolute', width: 40, height: 40, backgroundColor: '#eca662', borderRadius: 27, alignItems: 'center', justifyContent: 'center' },

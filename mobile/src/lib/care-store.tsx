@@ -3,11 +3,11 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from '
 
 export type Recipient = { id: string; name: string; birthDate: string; sex: string; pregnant: string; bloodType: string; height: string; weight: string; conditions: string[]; allergies: string[] };
 export type MedicationStatus = 'Missed' | 'Taken';
-export type Medication = { notificationRead?: boolean; status?: MedicationStatus; id: string; recipientId: string; name: string; dosage: string; frequency: string; times: string[]; rx: string; strength: string; startDate: string; endDate: string; expiryDate: string; refills: string };
+export type Medication = { activityAt?: string; instructions?: string; missedAt?: string; notificationRead?: boolean; status?: MedicationStatus; id: string; recipientId: string; name: string; dosage: string; frequency: string; times: string[]; rx: string; strength: string; startDate: string; endDate: string; expiryDate: string; refills: string };
 type CareState = { recipients: Recipient[]; medications: Medication[] };
 const empty: CareState = { recipients: [], medications: [] };
 const key = 'carecompanion.native.v1';
-const Context = createContext<{ state: CareState; ready: boolean; error: string; saveRecipient: (recipient: Omit<Recipient, 'id'>) => Promise<string>; saveMedication: (medication: Omit<Medication, 'id'>) => Promise<void>; removeRecipient: (id: string) => Promise<void>; markNotificationsRead: () => Promise<void> } | null>(null);
+const Context = createContext<{ state: CareState; ready: boolean; error: string; saveRecipient: (recipient: Omit<Recipient, 'id'>) => Promise<string>; saveMedication: (medication: Omit<Medication, 'id'>) => Promise<void>; saveMedications: (medications: Omit<Medication, 'id'>[]) => Promise<void>; removeRecipient: (id: string) => Promise<void>; markNotificationsRead: () => Promise<void> } | null>(null);
 
 export function CareProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<CareState>(empty);
@@ -29,9 +29,11 @@ export function CareProvider({ children }: { children: ReactNode }) {
     await persist({ ...state, recipients: [...state.recipients, { ...recipient, id }] });
     return id;
   }
-  async function saveMedication(medication: Omit<Medication, 'id'>) {
-    if (!state.recipients.some(({ id }) => id === medication.recipientId)) throw Error('Choose a care recipient first.');
-    await persist({ ...state, medications: [...state.medications, { ...medication, status: medication.status ?? 'Missed', notificationRead: false, id: `medication-${Date.now()}` }] });
+  async function saveMedication(medication: Omit<Medication, 'id'>) { await saveMedications([medication]); }
+  async function saveMedications(medications: Omit<Medication, 'id'>[]) {
+    if (medications.some((medication) => !state.recipients.some(({ id }) => id === medication.recipientId))) throw Error('Choose a care recipient first.');
+    const timestamp = Date.now();
+    await persist({ ...state, medications: [...state.medications, ...medications.map((medication, index) => ({ ...medication, status: medication.status ?? 'Missed' as const, notificationRead: false, activityAt: medication.activityAt ?? new Date(timestamp).toISOString(), id: `medication-${timestamp}-${index}` }))] });
   }
   async function removeRecipient(id: string) {
     await persist({ ...state, recipients: state.recipients.filter((person) => person.id !== id), medications: state.medications.filter((medication) => medication.recipientId !== id) });
@@ -40,6 +42,6 @@ export function CareProvider({ children }: { children: ReactNode }) {
     if (!state.medications.some((medication) => medication.notificationRead === false)) return;
     await persist({ ...state, medications: state.medications.map((medication) => ({ ...medication, notificationRead: true })) });
   }
-  return <Context.Provider value={{ state, ready, error, saveRecipient, saveMedication, removeRecipient, markNotificationsRead }}>{children}</Context.Provider>;
+  return <Context.Provider value={{ state, ready, error, saveRecipient, saveMedication, saveMedications, removeRecipient, markNotificationsRead }}>{children}</Context.Provider>;
 }
 export function useCare() { const value = useContext(Context); if (!value) throw Error('Missing CareProvider'); return value; }

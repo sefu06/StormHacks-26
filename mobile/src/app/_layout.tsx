@@ -9,6 +9,7 @@ export default function Layout() {
   if (error) return <View style={{ flex: 1, justifyContent: 'center', padding: 30 }}><Text>The app font could not load. Please restart the app.</Text></View>;
   if (!loaded) return <ActivityIndicator style={{ flex: 1 }} />;
   return <SafeAreaProvider><CareProvider><StatusBar style="dark" /><Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: '#fff' } }}>
+    <Stack.Screen name="setup/care-recipient" options={{ presentation: 'transparentModal', animation: 'fade', contentStyle: { backgroundColor: 'transparent' } }} />
     <Stack.Screen name="medications" options={{ presentation: 'transparentModal', animation: 'fade', contentStyle: { backgroundColor: 'transparent' } }} />
   </Stack></CareProvider></SafeAreaProvider>;
 }

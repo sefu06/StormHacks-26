@@ -1,8 +1,11 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Alert, Pressable, Text, View } from 'react-native';
-import Camera from '../../../assets/figma/camera.svg';
-import { Button, DateField, Field, Input, Screen, Select, SymbolIcon, styles } from '../../components/ui';
+import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { PopupWindow } from '../../components/popup-window';
+import { HomeDog } from '../../components/home-dogs';
+import { MedicationAction } from '../../components/medication-stage';
+import { DateField, Field, Input, Select, SymbolIcon, styles } from '../../components/ui';
 import { useCare } from '../../lib/care-store';
 import { emptyDate, parseDate } from '../../lib/dates';
 const options = (values: string[]) => values.map((value) => ({ label: value, value }));
@@ -26,6 +29,8 @@ function Tags({ label, values, onChange }: { label: string; values: string[]; on
   </Field>;
 }
 export default function Setup() {
+  const insets = useSafeAreaInsets();
+  const close = () => { if (router.canGoBack()) router.back(); else router.replace('/home'); };
   const { saveRecipient } = useCare();
   const [name, setName] = useState(''); const [birth, setBirth] = useState(emptyDate);
   const [sex, setSex] = useState(''); const [pregnant, setPregnant] = useState(''); const [bloodType, setBloodType] = useState('');
@@ -37,10 +42,13 @@ export default function Setup() {
     const birthDate = parseDate(birth);
     if (birthDate === null) { setError('Enter a valid date of birth.'); return; }
     setBusy(true); setError('');
-    try { const recipientId = await saveRecipient({ name: name.trim(), birthDate, sex, pregnant, bloodType, height, weight, conditions, allergies }); router.push({ pathname: '/medications/add', params: { recipientId } }); }
+    try { const recipientId = await saveRecipient({ name: name.trim(), birthDate, sex, pregnant, bloodType, height, weight, conditions, allergies }); router.replace({ pathname: '/medications/add', params: { recipientId } }); }
     catch { Alert.alert('Unable to save', 'Please try again.'); } finally { setBusy(false); }
   }
-  return <Screen kind="setup"><View style={{ alignSelf: 'center', marginBottom: 23 }}><Camera /></View><View style={{ gap: 20 }}>
+  return <PopupWindow label="care recipient popup" onClose={close}>
+    <View testID="recipient-header" style={{ paddingHorizontal: 30, paddingTop: 8, paddingBottom: 20, zIndex: 1 }}><View style={{ width: '100%', maxWidth: 342, alignSelf: 'center' }}><Text style={{ fontFamily: 'PlusJakartaSans_700Bold', fontSize: 26, lineHeight: 33, color: '#000', paddingRight: 70 }}>Add Care Recipient</Text></View></View>
+    <ScrollView testID="recipient-fields" style={{ flex: 1 }} keyboardShouldPersistTaps="handled" contentContainerStyle={{ paddingHorizontal: 30, paddingBottom: 20 }}><View style={{ width: '100%', maxWidth: 342, alignSelf: 'center', gap: 20, paddingTop: 52.257 }}>
+    <View pointerEvents="none" style={{ position: 'absolute', right: 7, top: 0, zIndex: 1 }}><HomeDog /></View>
     <Field label="Name"><Input accessibilityLabel="Name" placeholder="Enter name" value={name} onChangeText={setName} autoCapitalize="words" /></Field>
     <DateField label="Date of Birth" value={birth} onChange={setBirth} />
     <Field label="Sex"><Select label="Sex" value={sex} onChange={setSex} options={options(['Female', 'Male', 'Other'])} /></Field>
@@ -62,6 +70,7 @@ export default function Setup() {
       </View>
     </Field>
     <Tags label="Conditions" values={conditions} onChange={setConditions} /><Tags label="Allergies" values={allergies} onChange={setAllergies} />
-    {!!error && <Text style={styles.error} accessibilityRole="alert">{error}</Text>}<Button title={busy ? 'Saving…' : 'Save and Continue'} disabled={busy} onPress={save} />
-  </View></Screen>;
+  </View></ScrollView>
+    <View testID="recipient-footer" style={{ paddingHorizontal: 30, paddingTop: 12, paddingBottom: Math.max(insets.bottom, 20) }}><View style={{ width: '100%', maxWidth: 342, alignSelf: 'center', gap: 8 }}>{!!error && <Text style={styles.error} accessibilityRole="alert">{error}</Text>}<MedicationAction title={busy ? 'Saving…' : 'Save Care Recipient'} disabled={busy} onPress={save} /></View></View>
+  </PopupWindow>;
 }
