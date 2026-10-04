@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from 'react';
-import { router } from 'expo-router';
+import { router, usePathname } from 'expo-router';
 import { Picker } from '@react-native-picker/picker';
 import { KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions, type TextInputProps } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -20,6 +20,12 @@ export const styles = StyleSheet.create({
 });
 export function Screen({ children, kind = 'form' }: { children: ReactNode; kind?: 'search' | 'form' | 'setup' }) {
   const { height } = useWindowDimensions();
+  const pathname = usePathname();
+  if (pathname.startsWith('/medications/')) {
+    return <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 30, paddingTop: 16, paddingBottom: 30 }}>
+      <View style={{ width: '100%', maxWidth: 342, alignSelf: 'center' }}>{children}</View>
+    </ScrollView>;
+  }
   return <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}><KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
     {router.canGoBack() ? <Pressable onPress={() => router.back()} accessibilityRole="button" accessibilityLabel="Go back" style={{ position: 'absolute', top: 4, left: 20, zIndex: 1, padding: 10 }}><Text style={styles.text}>‹ Back</Text></Pressable> : null}
     <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 30, paddingTop: kind === 'search' ? Math.max(60, height / 2 - 249) : kind === 'setup' ? 60 : Math.max(60, height / 2 - 414), paddingBottom: 60 }}>
