@@ -60,10 +60,6 @@ export function PlaceholderPage({
         </CardContent>
       </Card>
 
-      <p className="prototype-note">
-        <span className="prototype-note-mark" aria-hidden="true">i</span>
-        CareCompanion is a prototype. It reflects caregiver-entered updates and does not replace professional medical advice.
-      </p>
     </div>
   );
 }

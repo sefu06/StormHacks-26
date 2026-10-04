@@ -1,4 +1,4 @@
-export type PersonSlug = "margaret" | "alex";
+export type PersonSlug = string;
 
 export type MedicationStatus = "taken" | "missed" | "upcoming";
 

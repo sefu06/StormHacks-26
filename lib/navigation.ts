@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { Activity, CalendarDays, Home, UsersRound } from "lucide-react";
+import { Activity, Home, UsersRound } from "lucide-react";
 
 export type NavigationItem = {
   href: string;
@@ -8,10 +8,9 @@ export type NavigationItem = {
 };
 
 export const navigationItems: NavigationItem[] = [
-  { href: "/home", label: "Home", icon: Home },
-  { href: "/schedule", label: "Schedule", icon: CalendarDays },
   { href: "/activity", label: "Activity", icon: Activity },
-  { href: "/care-team", label: "Care team", icon: UsersRound },
+  { href: "/home", label: "Home", icon: Home },
+  { href: "/people", label: "People", icon: UsersRound },
 ];
 
 export const pageCopy = {
@@ -27,9 +26,9 @@ export const pageCopy = {
     title: "Activity",
     subtitle: "Recent care activity.",
   },
-  "/care-team": {
-    title: "Care team",
-    subtitle: "People supporting Margaret.",
+  "/people": {
+    title: "People",
+    subtitle: "People in your care.",
   },
   "/profile": {
     title: "Your profile",

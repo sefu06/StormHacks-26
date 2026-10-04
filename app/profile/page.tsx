@@ -37,7 +37,6 @@ export default function ProfilePage() {
       <section className="caregiver-profile-section" aria-labelledby="caregiver-details-title">
         <div className="caregiver-profile-section-heading">
           <div>
-            <p className="caregiver-profile-eyebrow">Your account</p>
             <h2 id="caregiver-details-title">Profile details</h2>
           </div>
         </div>
@@ -59,7 +58,6 @@ export default function ProfilePage() {
       <section className="caregiver-profile-section" aria-labelledby="caregiver-preferences-title">
         <div className="caregiver-profile-section-heading">
           <div>
-            <p className="caregiver-profile-eyebrow">Stay in the loop</p>
             <h2 id="caregiver-preferences-title">Notification preferences</h2>
           </div>
         </div>
@@ -88,10 +86,6 @@ export default function ProfilePage() {
         <span>CareCompanion helps you coordinate Margaret’s day-to-day care.</span>
       </div>
 
-      <p className="prototype-note">
-        <span className="prototype-note-mark" aria-hidden="true">i</span>
-        This is a demo caregiver profile. Account editing and sign-in settings will be added in a future version.
-      </p>
     </div>
   );
 }

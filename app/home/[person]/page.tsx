@@ -12,7 +12,6 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   demoToday,
-  getCarePerson,
   type MedicationStatus,
   type ScheduleMedication,
 } from "@/lib/care-data";
@@ -44,11 +43,11 @@ function StatusIcon({ status }: { status: MedicationStatus }) {
 
 export default function PersonProfilePage() {
   const params = useParams<{ person: string }>();
-  const person = getCarePerson(params?.person) ?? getCarePerson("margaret");
+  const { getSchedule, people, updateMedication } = useCareData();
+  const person = people.find(({ slug }) => slug === params?.person);
 
   if (!person) return null;
 
-  const { getSchedule, updateMedication } = useCareData();
   const schedule = getSchedule(person, demoToday);
   const [selectedMedication, setSelectedMedication] = useState<ScheduleMedication | null>(null);
   const [editingMedication, setEditingMedication] = useState<ScheduleMedication | null>(null);
@@ -148,11 +147,6 @@ export default function PersonProfilePage() {
           </div>
         </div>
       </section>
-
-      <p className="prototype-note">
-        <span className="prototype-note-mark" aria-hidden="true">i</span>
-        Demo-only fictional profile. Caregiver-entered information should be confirmed with the care recipient’s pharmacist or prescriber.
-      </p>
 
       <MedicationDetailsDialog
         medication={selectedMedication}

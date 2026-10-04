@@ -51,7 +51,7 @@ body {
   min-width: 320px;
   margin: 0;
   background: var(--background);
-  color: var(--foreground);
+  color: var(--primary);
   font-family: var(--font-plus-jakarta), sans-serif;
   font-size: 15px;
   line-height: 22px;
@@ -404,13 +404,7 @@ a {
 }
 
 .notification-dialog-shell::before {
-  display: block;
-  width: 38px;
-  height: 4px;
-  margin: 0 auto 22px;
-  border-radius: 999px;
-  background: #d9d5e1;
-  content: "";
+  display: none;
 }
 
 .notification-panel-header {
@@ -418,7 +412,7 @@ a {
   align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
-  padding: 4px 0 0;
+  padding: 0;
 }
 
 .notification-panel-header h2 {
@@ -705,6 +699,441 @@ a {
   line-height: 28px;
 }
 
+.activity-page {
+  display: grid;
+  gap: 24px;
+}
+
+.activity-history {
+  display: grid;
+  gap: 12px;
+}
+
+.activity-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0 4px;
+}
+
+.activity-section-heading h2 {
+  margin: 0;
+  color: var(--foreground);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 28px;
+}
+
+.activity-filter-button {
+  display: inline-flex;
+  min-height: 36px;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--popover);
+  padding: 7px 10px;
+  color: var(--muted-foreground);
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 18px;
+}
+
+.activity-filter-button:hover,
+.activity-filter-button-active {
+  border-color: var(--primary);
+  background: var(--secondary);
+  color: var(--primary);
+}
+
+.activity-filter-button > span {
+  min-width: 18px;
+  border-radius: 999px;
+  background: var(--surface-subtle);
+  padding: 1px 5px;
+  text-align: center;
+}
+
+.activity-list {
+  display: grid;
+  gap: 10px;
+}
+
+.activity-entry {
+  border: 0;
+  border-radius: var(--radius-inner);
+  background: var(--surface-subtle);
+  box-shadow: none;
+}
+
+.activity-entry-content {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+}
+
+.activity-entry-icon {
+  display: inline-flex;
+  height: 30px;
+  width: 30px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--status-positive-surface);
+  color: var(--status-positive-foreground);
+}
+
+.activity-entry-missed .activity-entry-icon {
+  background: var(--status-warning-surface);
+  color: var(--status-warning-foreground);
+}
+
+.activity-entry-copy {
+  display: grid;
+  min-width: 0;
+  gap: 1px;
+}
+
+.activity-entry-copy strong {
+  color: var(--foreground);
+  font-size: 13px;
+  font-weight: 750;
+  line-height: 19px;
+}
+
+.activity-entry-copy > span:not(.activity-entry-time) {
+  overflow: hidden;
+  color: var(--foreground);
+  font-size: 12px;
+  line-height: 18px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.activity-entry-time {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--muted-foreground);
+  font-size: 11px;
+  line-height: 16px;
+}
+
+.activity-entry-status {
+  align-self: start;
+  border-radius: 999px;
+  background: var(--status-positive-surface);
+  padding: 4px 8px;
+  color: var(--status-positive-foreground);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 16px;
+}
+
+.activity-entry-missed .activity-entry-status {
+  background: var(--status-warning-surface);
+  color: var(--status-warning-foreground);
+}
+
+.activity-entry-actions {
+  display: grid;
+  justify-items: end;
+  gap: 8px;
+}
+
+.activity-filter-button:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.activity-empty {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 20px 4px;
+  color: var(--muted-foreground);
+  font-size: 13px;
+}
+
+.people-page {
+  display: grid;
+  gap: 24px;
+}
+
+.people-section,
+.people-invite-card {
+  display: grid;
+  gap: 14px;
+}
+
+.people-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0 4px;
+}
+
+.people-section-heading h2,
+.people-invite-heading h2 {
+  margin: 0;
+  color: var(--foreground);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 28px;
+}
+
+.people-section-heading p,
+.people-invite-heading p {
+  margin: 2px 0 0;
+  color: var(--muted-foreground);
+  font-size: 13px;
+  line-height: 20px;
+}
+
+.people-list {
+  display: grid;
+  gap: 10px;
+}
+
+.people-card {
+  border: 0;
+  border-radius: var(--radius-inner);
+  background: var(--surface-subtle);
+  box-shadow: none;
+}
+
+.people-card-content {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+}
+
+.people-avatar {
+  display: inline-flex;
+  height: 48px;
+  width: 48px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.people-card-copy {
+  display: grid;
+  min-width: 0;
+  gap: 1px;
+}
+
+.people-card-copy strong {
+  overflow: hidden;
+  color: var(--foreground);
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 22px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.people-card-copy > span {
+  color: var(--muted-foreground);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.people-card-copy a {
+  width: fit-content;
+  margin-top: 3px;
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 18px;
+}
+
+.people-card-copy a:hover {
+  color: var(--lavender-deep);
+}
+
+.people-remove-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  padding: 7px 8px;
+  color: var(--muted-foreground);
+  cursor: pointer;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 16px;
+}
+
+.people-remove-button:hover {
+  background: var(--surface-hover);
+  color: var(--status-warning-foreground);
+}
+
+.people-remove-button:focus-visible,
+.people-copy-button:focus-visible,
+.people-open-link:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.people-invite-card {
+  border-radius: var(--radius-card);
+  background: var(--surface-subtle);
+  padding: 20px;
+}
+
+.people-invite-heading {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.people-invite-icon,
+.people-join-icon {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--secondary);
+  color: var(--primary);
+}
+
+.people-invite-icon {
+  height: 40px;
+  width: 40px;
+}
+
+.people-invite-form,
+.people-invite-result {
+  display: grid;
+  gap: 12px;
+}
+
+.people-field {
+  display: grid;
+  gap: 6px;
+  color: var(--foreground);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 18px;
+}
+
+.people-field input {
+  min-height: 44px;
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-control);
+  background: var(--popover);
+  padding: 10px 12px;
+  color: var(--foreground);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 20px;
+}
+
+.people-field input:focus {
+  border-color: var(--primary);
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.people-invite-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.people-copy-button,
+.people-open-link {
+  display: inline-flex;
+  min-height: 36px;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-control);
+  background: var(--popover);
+  padding: 7px 10px;
+  color: var(--foreground);
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 18px;
+}
+
+.people-copy-button:hover,
+.people-open-link:hover {
+  background: var(--surface-hover);
+}
+
+.people-join-screen {
+  display: grid;
+  min-height: 100svh;
+  place-items: center;
+  background: var(--background);
+  padding: 24px;
+}
+
+.people-join-card {
+  display: grid;
+  width: min(100%, 420px);
+  justify-items: start;
+  gap: 12px;
+  border-radius: var(--radius-card);
+  background: var(--surface-subtle);
+  padding: 28px;
+}
+
+.people-join-icon {
+  height: 56px;
+  width: 56px;
+  margin-bottom: 4px;
+}
+
+.people-join-kicker {
+  margin: 0;
+  color: var(--muted-foreground);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 18px;
+}
+
+.people-join-card h1 {
+  margin: 0;
+  color: var(--foreground);
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 34px;
+}
+
+.people-join-card > p:not(.people-join-kicker) {
+  margin: 0;
+  color: var(--muted-foreground);
+  font-size: 15px;
+  line-height: 22px;
+}
+
 .home-dashboard {
   display: grid;
   gap: 24px;
@@ -812,29 +1241,87 @@ a {
   line-height: 20px;
 }
 
-.home-add-medication-fab {
+.home-add-medication-fab-wrap {
   --fab-edge-gap: 28px;
   position: fixed;
   right: var(--fab-edge-gap);
   bottom: var(--fab-edge-gap);
   z-index: 35;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.home-add-medication-fab {
   display: inline-flex;
-  height: 56px;
-  width: 56px;
+  height: 64px;
+  width: 64px;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--border);
+  border: 1px solid var(--primary);
   border-radius: 999px;
-  background: var(--secondary);
-  color: var(--foreground);
+  background: var(--primary);
+  color: var(--primary-foreground);
   isolation: isolate;
   transition: background-color 150ms ease, transform 150ms ease;
 }
 
+.home-add-medication-actions {
+  display: grid;
+  justify-items: end;
+  gap: 8px;
+  animation: home-add-medication-actions-in 150ms ease-out both;
+}
+
+.home-add-medication-action {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 9px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--popover);
+  padding: 10px 15px;
+  color: var(--foreground);
+  box-shadow: var(--shadow-card);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 18px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.home-add-medication-action:hover {
+  border-color: var(--primary);
+  background: var(--surface-hover);
+  color: var(--foreground);
+}
+
+.home-add-medication-action-primary,
+.home-add-medication-action-primary:hover {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+
+@keyframes home-add-medication-actions-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.96);
+    transform-origin: bottom right;
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 .home-add-medication-fab::after {
   position: absolute;
-  right: 0;
-  bottom: calc(100% + 10px);
+  right: 8px;
+  bottom: calc(100% + 14px);
   border-radius: 8px;
   background: var(--foreground);
   color: var(--background);
@@ -850,20 +1337,26 @@ a {
   white-space: nowrap;
 }
 
-.home-add-medication-fab:hover::after,
 .home-add-medication-fab:focus-visible::after,
 .home-add-medication-fab:active::after {
   opacity: 1;
   transform: translateY(0);
 }
 
+@media (hover: hover) {
+  .home-add-medication-fab:hover::after {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .home-add-medication-fab:hover {
-  background: var(--surface-hover);
+  background: #92553e;
   transform: translateY(-1px);
 }
 
 .home-add-medication-fab:active {
-  background: var(--accent);
+  background: #814631;
   transform: translateY(0);
 }
 
@@ -947,6 +1440,11 @@ a {
 
 .home-person-avatar-alex {
   background: #f7e5d8;
+  color: var(--primary);
+}
+
+.home-person-avatar-new {
+  background: var(--secondary);
   color: var(--primary);
 }
 
@@ -1525,12 +2023,13 @@ a {
 }
 
 .caregiver-profile-detail-row dt {
-  color: var(--muted-foreground);
+  color: var(--foreground);
+  font-weight: 650;
 }
 
 .caregiver-profile-detail-row dd {
-  color: var(--foreground);
-  font-weight: 650;
+  color: var(--muted-foreground);
+  font-weight: 400;
   text-align: right;
 }
 
@@ -1783,33 +2282,6 @@ a {
 
 .placeholder-action {
   margin-top: 22px;
-}
-
-.prototype-note {
-  display: flex;
-  max-width: 640px;
-  align-items: flex-start;
-  gap: 8px;
-  margin: 20px auto 0;
-  color: var(--muted-foreground);
-  font-size: 13px;
-  line-height: 18px;
-  text-align: center;
-}
-
-.prototype-note-mark {
-  display: inline-flex;
-  height: 17px;
-  width: 17px;
-  flex: 0 0 17px;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  color: var(--foreground);
-  font-size: 11px;
-  font-weight: 700;
-  line-height: 1;
 }
 
 .medication-dialog {
@@ -2361,6 +2833,10 @@ a {
   margin-top: 24px;
 }
 
+.medication-edit-dialog .medication-dialog-actions {
+  padding-top: 16px;
+}
+
 .medication-details-dialog {
   width: min(560px, calc(100% - 32px));
   max-height: calc(100svh - 32px);
@@ -2775,7 +3251,7 @@ a {
     display: none;
   }
 
-  .home-add-medication-fab {
+  .home-add-medication-fab-wrap {
     right: 20px;
     bottom: calc(96px + env(safe-area-inset-bottom));
   }
@@ -3040,49 +3516,32 @@ a {
 
   .medication-dialog-shell {
     max-height: 88svh;
-    padding: 12px 18px max(22px, env(safe-area-inset-bottom));
+    padding: 20px 18px max(22px, env(safe-area-inset-bottom));
   }
 
   .medication-edit-dialog-shell {
     max-height: 88svh;
-    padding: 12px 18px max(22px, env(safe-area-inset-bottom));
+    padding: 20px 18px max(22px, env(safe-area-inset-bottom));
   }
 
   .medication-details-dialog-shell {
     max-height: 88svh;
-    padding: 12px 18px max(22px, env(safe-area-inset-bottom));
+    padding: 20px 18px max(22px, env(safe-area-inset-bottom));
   }
 
   .notification-dialog-shell {
     max-height: 88svh;
-    padding: 12px 18px max(22px, env(safe-area-inset-bottom));
+    padding: 20px 18px max(22px, env(safe-area-inset-bottom));
   }
 
-  .medication-dialog-shell::before {
+  .medication-dialog-shell::before,
+  .medication-edit-dialog-shell::before,
+  .medication-details-dialog-shell::before,
+  .notification-dialog-shell::before {
     display: block;
     width: 38px;
     height: 4px;
-    margin: 0 auto 16px;
-    border-radius: 999px;
-    background: #d9d5e1;
-    content: "";
-  }
-
-  .medication-edit-dialog-shell::before {
-    display: block;
-    width: 38px;
-    height: 4px;
-    margin: 0 auto 16px;
-    border-radius: 999px;
-    background: #d9d5e1;
-    content: "";
-  }
-
-  .medication-details-dialog-shell::before {
-    display: block;
-    width: 38px;
-    height: 4px;
-    margin: 0 auto 16px;
+    margin: 0 auto 24px;
     border-radius: 999px;
     background: #d9d5e1;
     content: "";
@@ -3183,12 +3642,6 @@ a {
     width: 100%;
   }
 
-  .prototype-note {
-    margin-top: 16px;
-    padding: 0 4px;
-    text-align: left;
-  }
-
   .mobile-bottom-nav {
     position: fixed;
     right: 0;
@@ -3207,7 +3660,7 @@ a {
   .nav-links-mobile {
     display: grid;
     flex: 1;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 2px;
   }
 
@@ -3318,6 +3771,12 @@ a {
   color: var(--foreground);
   padding: 0 10px;
   font: inherit;
+}
+
+.care-recipient-setup-name > input {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
 }
 
 .care-recipient-setup-group input:focus-visible,

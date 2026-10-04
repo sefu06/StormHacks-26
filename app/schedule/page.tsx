@@ -8,11 +8,9 @@ import { MedicationDialog, type MedicationDraft } from "@/components/medication-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
-const people = ["Margaret", "Alex"];
-
 export default function SchedulePage() {
   const [isMedicationDialogOpen, setIsMedicationDialogOpen] = useState(false);
-  const { medicationPool, addMedicationToPool } = useCareData();
+  const { medicationPool, addMedicationToPool, people } = useCareData();
 
   useEffect(() => {
     if (new URLSearchParams(window.location.search).get("add") === "1") {
@@ -22,9 +20,8 @@ export default function SchedulePage() {
 
   const saveMedication = (draft: MedicationDraft, assignedPeople: string[]) => {
     const assignedTo = assignedPeople.flatMap((personName) => {
-      if (personName === "Margaret") return ["margaret"] as const;
-      if (personName === "Alex") return ["alex"] as const;
-      return [] as const;
+      const person = people.find(({ name }) => name === personName);
+      return person ? [person.slug] : [];
     });
 
     if (assignedTo.length === 0) return;
@@ -86,14 +83,9 @@ export default function SchedulePage() {
         )}
       </section>
 
-      <p className="prototype-note">
-        <span className="prototype-note-mark" aria-hidden="true">i</span>
-        CareCompanion is a prototype. It reflects caregiver-entered updates and does not replace professional medical advice.
-      </p>
-
       <MedicationDialog
         open={isMedicationDialogOpen}
-        people={people}
+        people={people.map(({ name }) => name)}
         onOpenChange={setIsMedicationDialogOpen}
         onSave={saveMedication}
       />

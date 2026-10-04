@@ -121,7 +121,7 @@ export default function CareRecipientSetupPage() {
         />
 
         <form className="care-recipient-setup-form" onSubmit={submit}>
-          <div className="care-recipient-setup-group">
+          <div className="care-recipient-setup-group care-recipient-setup-name">
             <label htmlFor="setup-name">Name</label>
             <input id="setup-name" placeholder="Enter name" value={name} onChange={(event) => setName(event.target.value)} />
           </div>

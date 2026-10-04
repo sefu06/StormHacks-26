@@ -13,7 +13,6 @@ import { navigationItems, getPageCopy } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { MissedMedicationNotifications } from "@/components/missed-medication-notifications";
 
 function RecipientSwitcher({ mobile = false }: { mobile?: boolean }) {
   return (
@@ -82,7 +81,7 @@ function DeviceStatus() {
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
-  if (pathname.startsWith("/setup")) {
+  if (pathname.startsWith("/setup") || pathname.startsWith("/people/join")) {
     return <>{children}</>;
   }
 
@@ -126,13 +125,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <div className="content-frame">
           <header className="desktop-header">
             <div className="page-heading">
-              <p className="page-kicker">Caring for Margaret</p>
+              {pathname !== "/people" ? <p className="page-kicker">Caring for Margaret</p> : null}
               <h1>{title}</h1>
-              <p>{subtitle}</p>
+              {pathname !== "/people" && subtitle ? <p>{subtitle}</p> : null}
             </div>
             <div className="header-actions">
               <DeviceStatus />
-              <MissedMedicationNotifications />
               <Button asChild variant="ghost" size="icon" aria-label="Open David’s profile">
                 <Link href="/profile">
                   <Avatar className="h-8 w-8">
