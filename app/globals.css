@@ -812,6 +812,38 @@ a {
   line-height: 20px;
 }
 
+.home-add-medication-fab {
+  position: fixed;
+  right: 28px;
+  bottom: 28px;
+  z-index: 35;
+  display: inline-flex;
+  height: 56px;
+  width: 56px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--secondary);
+  color: var(--foreground);
+  transition: background-color 150ms ease, transform 150ms ease;
+}
+
+.home-add-medication-fab:hover {
+  background: var(--surface-hover);
+  transform: translateY(-1px);
+}
+
+.home-add-medication-fab:active {
+  background: var(--accent);
+  transform: translateY(0);
+}
+
+.home-add-medication-fab:focus-visible {
+  outline: 3px solid var(--ring);
+  outline-offset: 3px;
+}
+
 .home-add-medication-button {
   height: 36px;
   border-color: var(--border);
@@ -2715,11 +2747,9 @@ a {
     display: none;
   }
 
-  .home-add-medication-button {
-    height: 34px;
-    padding-right: 10px;
-    padding-left: 10px;
-    font-size: 11px;
+  .home-add-medication-fab {
+    right: 20px;
+    bottom: calc(88px + env(safe-area-inset-bottom));
   }
 
   .person-profile-page {
