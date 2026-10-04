@@ -3,6 +3,7 @@ import { Plus_Jakarta_Sans } from "next/font/google";
 
 import { AppShell } from "@/components/app-shell";
 import { CareDataProvider } from "@/components/care-data-provider";
+import { AuthProvider } from "@/lib/auth-context";
 import "./globals.css";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
@@ -20,9 +21,11 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en">
       <body className={plusJakartaSans.variable}>
-        <CareDataProvider>
-          <AppShell>{children}</AppShell>
-        </CareDataProvider>
+        <AuthProvider>
+          <CareDataProvider>
+            <AppShell>{children}</AppShell>
+          </CareDataProvider>
+        </AuthProvider>
       </body>
     </html>
   );

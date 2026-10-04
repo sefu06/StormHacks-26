@@ -1,6 +1,10 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { collection, addDoc } from "firebase/firestore";
+
+import { db, auth } from "@/lib/firebase";
 
 const initialConditions = ["ADHD", "High cholesterol"];
 const initialAllergies = ["Cephalexin", "Tree nuts"];
@@ -64,6 +68,7 @@ function TagField({
 }
 
 export default function CareRecipientSetupPage() {
+  const router = useRouter();
   const [name, setName] = useState("");
   const [month, setMonth] = useState("");
   const [day, setDay] = useState("");
@@ -76,6 +81,8 @@ export default function CareRecipientSetupPage() {
   const [conditions, setConditions] = useState<string[]>([]);
   const [allergies, setAllergies] = useState<string[]>([]);
   const [saved, setSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState("");
 
   useEffect(() => {
     if (new URLSearchParams(window.location.search).get("filled") !== "1") return;
@@ -93,9 +100,40 @@ export default function CareRecipientSetupPage() {
     setAllergies(initialAllergies);
   }, []);
 
-  const submit = (event: FormEvent<HTMLFormElement>) => {
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setSaved(true);
+    setSaveError("");
+    setSaving(true);
+
+    try {
+      const user = auth.currentUser;
+      if (!user) throw new Error("Not logged in");
+
+      // Build the notes field from conditions and allergies
+      const notesParts: string[] = [];
+      if (conditions.length > 0) notesParts.push(`Conditions: ${conditions.join(", ")}.`);
+      if (allergies.length > 0) notesParts.push(`Allergies: ${allergies.join(", ")}.`);
+
+      // Save to seniors collection using the CLAUDE.md section 6 schema
+      await addDoc(collection(db, "seniors"), {
+        name: name,
+        preferredName: name.split(" ")[0], // first name as the spoken name
+        notes: notesParts.join(" "),
+        caregiverName: user.displayName || user.email || "",
+        caregiverUid: user.uid,
+        caregiverContact: "",
+        speechRate: "normal",
+      });
+
+      setSaved(true);
+      // Redirect to the home page after a brief moment so the user sees "Saved"
+      setTimeout(() => router.replace("/home"), 1000);
+    } catch (err) {
+      console.error("Error saving senior:", err);
+      setSaveError("Couldn't save. Please try again.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const addCondition = () => {
@@ -200,7 +238,10 @@ export default function CareRecipientSetupPage() {
             onAdd={addAllergy}
           />
 
-          <button className="care-recipient-setup-save" type="submit">{saved ? "Saved" : "Save Care Recipient"}</button>
+          <button className="care-recipient-setup-save" type="submit" disabled={saving || saved}>
+            {saved ? "Saved ✓" : saving ? "Saving…" : "Save Care Recipient"}
+          </button>
+          {saveError && <p role="alert" style={{ color: "#c0392b", fontSize: "0.875rem" }}>{saveError}</p>}
           <p className="care-recipient-setup-status" aria-live="polite">{saved ? `${name} has been saved.` : ""}</p>
         </form>
       </div>

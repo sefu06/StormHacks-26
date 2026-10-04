@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect } from "react";
 import {
   ChevronDown,
   HeartHandshake,
@@ -10,6 +11,7 @@ import {
 } from "lucide-react";
 
 import { navigationItems, getPageCopy } from "@/lib/navigation";
+import { useAuth } from "@/lib/auth-context";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -81,9 +83,26 @@ function DeviceStatus() {
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const { user, loading } = useAuth();
 
-  if (pathname.startsWith("/setup")) {
+  const isAuthPage = pathname === "/login" || pathname === "/signup";
+  const isSetupPage = pathname.startsWith("/setup");
+
+  useEffect(() => {
+    if (!loading && !user && !isAuthPage) {
+      router.replace("/login");
+    }
+  }, [loading, user, isAuthPage, router]);
+
+  // Login and signup pages render without the shell
+  if (isAuthPage || isSetupPage) {
     return <>{children}</>;
+  }
+
+  // Show nothing while Firebase checks if the user is logged in
+  if (loading || !user) {
+    return null;
   }
 
   const { title, subtitle } = getPageCopy(pathname);

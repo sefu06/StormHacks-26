@@ -1,14 +1,15 @@
+"use client";
+
 import Link from "next/link";
-import { ChevronLeft, HeartHandshake, ShieldCheck } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { ChevronLeft, HeartHandshake, LogOut, ShieldCheck } from "lucide-react";
+import { signOut } from "firebase/auth";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
-
-const profileDetails = [
-  { label: "Name", value: "David" },
-  { label: "Care recipient", value: "Margaret" },
-  { label: "Account type", value: "CareCompanion demo" },
-];
+import { Button } from "@/components/ui/button";
+import { auth } from "@/lib/firebase";
+import { useAuth } from "@/lib/auth-context";
 
 const notificationDetails = [
   { label: "Medication alerts", value: "Missed doses and upcoming reminders" },
@@ -17,6 +18,22 @@ const notificationDetails = [
 ];
 
 export default function ProfilePage() {
+  const router = useRouter();
+  const { user } = useAuth();
+
+  const displayName = user?.displayName || user?.email || "Caregiver";
+  const initials = displayName.charAt(0).toUpperCase();
+
+  const handleLogout = async () => {
+    await signOut(auth);
+    router.replace("/login");
+  };
+
+  const profileDetails = [
+    { label: "Email", value: user?.email ?? "—" },
+    { label: "Account type", value: "CareCompanion caregiver" },
+  ];
+
   return (
     <div className="page-container caregiver-profile-page">
       <Link className="profile-back-link caregiver-profile-back-link" href="/home">
@@ -26,11 +43,11 @@ export default function ProfilePage() {
 
       <section className="caregiver-profile-hero" aria-labelledby="caregiver-profile-title">
         <Avatar className="caregiver-profile-avatar">
-          <AvatarFallback>D</AvatarFallback>
+          <AvatarFallback>{initials}</AvatarFallback>
         </Avatar>
         <div className="caregiver-profile-hero-copy">
           <p className="caregiver-profile-kicker">Caregiver account</p>
-          <h1 id="caregiver-profile-title">David</h1>
+          <h1 id="caregiver-profile-title">{displayName}</h1>
         </div>
       </section>
 
@@ -85,13 +102,17 @@ export default function ProfilePage() {
 
       <div className="caregiver-profile-about">
         <HeartHandshake size={18} strokeWidth={1.8} aria-hidden="true" />
-        <span>CareCompanion helps you coordinate Margaret’s day-to-day care.</span>
+        <span>CareCompanion helps you coordinate day-to-day care.</span>
       </div>
 
-      <p className="prototype-note">
-        <span className="prototype-note-mark" aria-hidden="true">i</span>
-        This is a demo caregiver profile. Account editing and sign-in settings will be added in a future version.
-      </p>
+      <Button
+        variant="ghost"
+        onClick={handleLogout}
+        style={{ marginTop: "1rem", gap: "0.5rem", color: "#c0392b" }}
+      >
+        <LogOut size={16} strokeWidth={1.8} aria-hidden="true" />
+        Log out
+      </Button>
     </div>
   );
 }
