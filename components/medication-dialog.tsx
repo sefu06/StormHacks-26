@@ -28,6 +28,7 @@ export type MedicationDraft = {
 };
 
 type MedicationDialogProps = {
+  initialName?: string;
   open: boolean;
   people: string[];
   onOpenChange: (open: boolean) => void;
@@ -84,7 +85,7 @@ function formatTimeInput(time: string) {
   return `${String(hour).padStart(2, "0")}:${match[2]}`;
 }
 
-export function MedicationDialog({ open, people, onOpenChange, onSave }: MedicationDialogProps) {
+export function MedicationDialog({ open, people, onOpenChange, onSave, initialName = "" }: MedicationDialogProps) {
   const { medicationPool } = useCareData();
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [step, setStep] = useState<Step>("choose");
@@ -102,12 +103,12 @@ export function MedicationDialog({ open, people, onOpenChange, onSave }: Medicat
 
   useEffect(() => {
     if (open) {
-      setStep("choose");
+      setStep(initialName ? "details" : "choose");
       setSelectedPeople([]);
-      setDraft(initialDraft);
+      setDraft({ ...initialDraft, name: initialName });
       setSelectedSavedMedicationId(null);
     }
-  }, [open]);
+  }, [open, initialName]);
 
   const updateDraft = <K extends keyof MedicationDraft>(key: K, value: MedicationDraft[K]) => {
     setDraft((current) => ({ ...current, [key]: value }));

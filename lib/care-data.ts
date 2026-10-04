@@ -13,6 +13,12 @@ export type ScheduleMedication = {
   status: MedicationStatus;
   instructions: string;
   notes: string;
+  scheduledTimes?: string[];
+  prescriptionNumber?: string;
+  strength?: string;
+  endDate?: string;
+  refills?: number;
+  expiryDate?: string;
 };
 
 export type DetailGroup = {

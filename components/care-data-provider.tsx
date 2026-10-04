@@ -27,12 +27,13 @@ type CareDataContextValue = {
   getSchedule: (person: CarePerson, date: string) => ScheduleMedication[];
   addMedicationToPool: (medication: NewMedicationInput, assignedTo: PersonSlug[]) => void;
   updateMedication: (person: CarePerson, date: string, medication: ScheduleMedication) => void;
-  addCarePerson: (name: string) => void;
+  addCarePerson: (name: string, detailGroups?: CarePerson["detailGroups"]) => void;
   removeCarePerson: (slug: PersonSlug) => void;
 };
 
 const CareDataContext = createContext<CareDataContextValue | null>(null);
 const peopleStorageKey = "carecompanion.people";
+const medicationStorageKey = "carecompanion.medications";
 
 function getMedicationKey(person: CarePerson, date: string, medicationId: string) {
   return `${person.slug}:${date}:${medicationId}`;
@@ -52,6 +53,7 @@ function formatDisplayTime(time: string) {
 
 function isScheduledOnDate(medication: ScheduleMedication, date: string) {
   if (date < medication.startDate) return false;
+  if (medication.endDate && date > medication.endDate) return false;
   if (medication.days.includes("Every day")) return true;
 
   const weekdayCodes = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
@@ -129,6 +131,16 @@ export function CareDataProvider({ children }: { children: React.ReactNode }) {
       // Keep the demo people when local storage is unavailable or malformed.
     }
 
+    try {
+      const savedMedications = window.localStorage.getItem(medicationStorageKey);
+      if (savedMedications) {
+        const parsed = JSON.parse(savedMedications) as MedicationPoolRecord[];
+        if (Array.isArray(parsed) && parsed.every((record) => record.id && record.medication?.name && Array.isArray(record.assignedTo))) setMedicationPool(parsed);
+      }
+    } catch {
+      // Keep the in-memory medication pool when storage is unavailable.
+    }
+
     setHasLoadedPeople(true);
   }, []);
 
@@ -141,6 +153,15 @@ export function CareDataProvider({ children }: { children: React.ReactNode }) {
       // The in-memory state still works when local storage is unavailable.
     }
   }, [hasLoadedPeople, people]);
+
+  useEffect(() => {
+    if (!hasLoadedPeople) return;
+    try {
+      window.localStorage.setItem(medicationStorageKey, JSON.stringify(medicationPool));
+    } catch {
+      // Saving still works for the current session when storage is unavailable.
+    }
+  }, [hasLoadedPeople, medicationPool]);
 
   useEffect(() => {
     const handleStorage = (event: StorageEvent) => {
@@ -167,7 +188,13 @@ export function CareDataProvider({ children }: { children: React.ReactNode }) {
       )),
       ...medicationPool
         .filter(({ assignedTo, medication }) => assignedTo.includes(person.slug) && isScheduledOnDate(medication, date))
-        .map(({ medication }) => overrides[getMedicationKey(person, date, medication.id)] ?? medication),
+        .flatMap(({ medication }) => {
+          const scheduledTimes = medication.scheduledTimes ?? [medication.time];
+          return scheduledTimes.map((time, index) => {
+            const scheduledMedication = { ...medication, id: index === 0 ? medication.id : `${medication.id}-time-${index}`, time: formatDisplayTime(time) };
+            return overrides[getMedicationKey(person, date, scheduledMedication.id)] ?? scheduledMedication;
+          });
+        }),
     ]
   ), [medicationPool, overrides]);
 
@@ -183,12 +210,15 @@ export function CareDataProvider({ children }: { children: React.ReactNode }) {
     setMedicationPool((current) => [...current, { id, medication: savedMedication, assignedTo }]);
   }, []);
 
-  const addCarePerson = useCallback((name: string) => {
+  const addCarePerson = useCallback((name: string, detailGroups?: CarePerson["detailGroups"]) => {
     if (!name.trim()) return;
 
     setPeople((current) => {
-      if (current.some((person) => person.name.toLowerCase() === name.trim().toLowerCase())) return current;
-      return [...current, createCarePerson(name, current)];
+      if (current.some((person) => person.name.toLowerCase() === name.trim().toLowerCase())) {
+        return detailGroups ? current.map((person) => person.name.toLowerCase() === name.trim().toLowerCase() ? { ...person, detailGroups } : person) : current;
+      }
+      const person = createCarePerson(name, current);
+      return [...current, detailGroups ? { ...person, detailGroups } : person];
     });
   }, []);
 

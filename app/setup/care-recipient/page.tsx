@@ -1,6 +1,8 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useCareData } from "@/components/care-data-provider";
 
 const initialConditions = ["ADHD", "High cholesterol"];
 const initialAllergies = ["Cephalexin", "Tree nuts"];
@@ -64,6 +66,8 @@ function TagField({
 }
 
 export default function CareRecipientSetupPage() {
+  const router = useRouter();
+  const { addCarePerson } = useCareData();
   const [name, setName] = useState("");
   const [month, setMonth] = useState("");
   const [day, setDay] = useState("");
@@ -75,7 +79,6 @@ export default function CareRecipientSetupPage() {
   const [weight, setWeight] = useState("");
   const [conditions, setConditions] = useState<string[]>([]);
   const [allergies, setAllergies] = useState<string[]>([]);
-  const [saved, setSaved] = useState(false);
 
   useEffect(() => {
     if (new URLSearchParams(window.location.search).get("filled") !== "1") return;
@@ -95,7 +98,23 @@ export default function CareRecipientSetupPage() {
 
   const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setSaved(true);
+    if (!name.trim()) return;
+    addCarePerson(name, [
+      { title: "Basic details", items: [
+        { label: "Full name", value: name.trim() },
+        { label: "Date of birth", value: [month, day, year].filter(Boolean).join(" ") || "Not added yet" },
+        { label: "Sex", value: sex || "Not added yet" },
+        { label: "Pregnancy status", value: pregnant || "Not added yet" },
+        { label: "Blood type", value: bloodType || "Not added yet" },
+        { label: "Height", value: height ? `${height} cm` : "Not added yet" },
+        { label: "Weight", value: weight ? `${weight} kg` : "Not added yet" },
+      ] },
+      { title: "Medication context", items: [
+        { label: "Conditions", value: conditions.join(", ") || "Not added yet" },
+        { label: "Allergies", value: allergies.join(", ") || "Not added yet" },
+      ] },
+    ]);
+    router.push(`/medications/add?recipient=${encodeURIComponent(name.trim())}`);
   };
 
   const addCondition = () => {
@@ -123,7 +142,7 @@ export default function CareRecipientSetupPage() {
         <form className="care-recipient-setup-form" onSubmit={submit}>
           <div className="care-recipient-setup-group care-recipient-setup-name">
             <label htmlFor="setup-name">Name</label>
-            <input id="setup-name" placeholder="Enter name" value={name} onChange={(event) => setName(event.target.value)} />
+            <input id="setup-name" required pattern={".*\\S.*"} placeholder="Enter name" value={name} onChange={(event) => setName(event.target.value)} />
           </div>
 
           <div className="care-recipient-setup-group">
@@ -200,8 +219,7 @@ export default function CareRecipientSetupPage() {
             onAdd={addAllergy}
           />
 
-          <button className="care-recipient-setup-save" type="submit">{saved ? "Saved" : "Save Care Recipient"}</button>
-          <p className="care-recipient-setup-status" aria-live="polite">{saved ? `${name} has been saved.` : ""}</p>
+          <button className="care-recipient-setup-save" type="submit">Save and Continue</button>
         </form>
       </div>
     </main>

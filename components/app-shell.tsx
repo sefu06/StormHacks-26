@@ -81,7 +81,7 @@ function DeviceStatus() {
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
-  if (pathname.startsWith("/setup") || pathname.startsWith("/people/join")) {
+  if (pathname.startsWith("/setup") || pathname.startsWith("/people/join") || pathname === "/medications/add") {
     return <>{children}</>;
   }
 
