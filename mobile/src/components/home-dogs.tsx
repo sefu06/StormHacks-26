@@ -62,7 +62,7 @@ export function HomeDog({ yellow = false, expanded = false, activity = false, fi
     <Layer asset={Mouth} left={38.05} top={30.54} />
     <Layer asset={YellowLeftEar} left={10.21} top={1.0} transform={[{ rotate: '11.14deg' }]} />
   </View>;
-  return <View style={{ width: 71, height: 75.257 }} accessible={false}>
+  return <View style={{ width: 71, height: 75.257, transform: [{ scaleX: -1 }] }} accessible={false}>
     <FigmaLayer asset={Body} left={1.61} top={30.3} width={64.504} height={44.957} transform={[{ scaleX: -1 }]} />
     <View style={{ position: 'absolute', left: 0, top: 0, width: 71, height: 42.021 }}>
       <FigmaLayer asset={RightEar} left={39.14} top={0} width={31.859} height={30.772} contentWidth={26.837} contentHeight={17.604} assetWidth={26.837} assetHeight={15.632} transform={[{ rotate: '139.77deg' }, { scaleY: -1 }]} />
