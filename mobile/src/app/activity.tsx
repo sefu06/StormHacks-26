@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import BubbleRight from '../../assets/home/bubble-right.svg';
@@ -15,7 +16,12 @@ const examples = [
   { id: 'example-3', name: 'Lisopril', dosage: '10mg tablet', status: 'Missed', yellow: true },
 ];
 export default function Activity() {
-  const { state, error } = useCare();
+  const { state, error, ready, markNotificationsRead } = useCare();
+  useEffect(() => {
+    if (ready && state.medications.some((medication) => medication.notificationRead === false)) {
+      void markNotificationsRead().catch(() => {});
+    }
+  }, [ready, state.medications, markNotificationsRead]);
   const { height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const entries = state.recipients.length ? state.medications.map((medication) => ({

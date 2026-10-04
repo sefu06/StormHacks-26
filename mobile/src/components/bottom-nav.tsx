@@ -1,14 +1,18 @@
 import { router } from 'expo-router';
 import { Pressable, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Bell from '../../assets/activity/bell.svg';
+import BellUnread from '../../assets/activity/bell.svg';
+import Bell from '../../assets/home/bell.svg';
+import { useCare } from '../lib/care-store';
 import Home from '../../assets/home/home.svg';
 import People from '../../assets/home/people.svg';
 
 export function BottomNav({ active }: { active: 'home' | 'people' | 'notifications' }) {
+  const { state } = useCare();
+  const hasUnread = state.medications.some((medication) => medication.notificationRead === false);
   const insets = useSafeAreaInsets();
   const items = [
-    { key: 'notifications', label: 'Activity', Icon: Bell, press: () => router.replace('/activity') },
+    { key: 'notifications', label: 'Activity', Icon: hasUnread ? BellUnread : Bell, press: () => router.replace('/activity') },
     { key: 'home', label: 'Home', Icon: Home, press: () => router.replace('/home') },
     { key: 'people', label: 'People', Icon: People, press: () => router.replace('/people') },
   ];
