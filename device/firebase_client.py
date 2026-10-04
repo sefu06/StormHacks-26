@@ -88,3 +88,61 @@ def log_event(senior_id: str, event_type: str, message: str) -> None:
         "createdAt": fs.SERVER_TIMESTAMP,
     })
     print(f"Event logged: [{event_type}] {message}")
+
+
+def create_dose_log(
+    senior_id: str,
+    medication_id: str,
+    medication_name: str,
+    scheduled_for: datetime,
+) -> str:
+    """Create a pending doseLog. Returns the new document ID."""
+    col = (
+        db.collection("seniors").document(senior_id)
+        .collection("doseLogs")
+    )
+    ref = col.document()
+    ref.set({
+        "medicationId": medication_id,
+        "medicationName": medication_name,
+        "scheduledFor": scheduled_for,
+        "status": "pending",
+        "remindersSent": 1,
+        "confirmedAt": None,
+        "confirmedBy": None,
+    })
+    print(f"DoseLog created: {ref.id} ({medication_name})")
+    return ref.id
+
+
+def mark_dose_taken(senior_id: str, log_id: str) -> None:
+    """Mark a doseLog as taken by touch sensor."""
+    (
+        db.collection("seniors").document(senior_id)
+        .collection("doseLogs").document(log_id)
+        .update({
+            "status": "taken",
+            "confirmedAt": fs.SERVER_TIMESTAMP,
+            "confirmedBy": "touch",
+        })
+    )
+    print(f"DoseLog {log_id} marked taken.")
+
+
+def mark_dose_missed(senior_id: str, log_id: str) -> None:
+    """Mark a doseLog as missed."""
+    (
+        db.collection("seniors").document(senior_id)
+        .collection("doseLogs").document(log_id)
+        .update({"status": "missed"})
+    )
+    print(f"DoseLog {log_id} marked missed.")
+
+
+def increment_reminders_sent(senior_id: str, log_id: str) -> None:
+    """Increment the remindersSent counter on a doseLog."""
+    (
+        db.collection("seniors").document(senior_id)
+        .collection("doseLogs").document(log_id)
+        .update({"remindersSent": fs.Increment(1)})
+    )
