@@ -21,7 +21,7 @@ import { useCare, type Recipient } from '../lib/care-store';
 import { displayTime } from '../lib/dates';
 
 const demoPeople = [{ id: 'demo-alexi', name: 'Alexi Manning' }, { id: 'demo-elaine', name: 'Elaine Chen' }];
-type Panel = 'people' | 'medications' | 'notifications' | 'profile' | 'choose' | 'recipient' | null;
+type Panel = 'people' | 'medications' | 'notifications' | 'profile' | 'recipient' | null;
 export default function Home() {
   const { state, error } = useCare();
   const { height } = useWindowDimensions();
@@ -39,9 +39,9 @@ export default function Home() {
     if (recipientId) { setPanel(null); router.push({ pathname: '/medications/add', params: { recipientId } }); }
     else if (state.recipients.length === 1) addMedication(state.recipients[0].id);
     else if (!state.recipients.length) { setPanel(null); router.push('/setup/care-recipient'); }
-    else setPanel('choose');
+    else { setPanel(null); router.push('/medications/add'); }
   }
-  const panelTitle = panel === 'people' ? 'People' : panel === 'profile' ? 'Your profile' : panel === 'notifications' ? 'Medication reminders' : panel === 'choose' ? 'Choose a care recipient' : panel === 'recipient' ? selected?.name || 'Care recipient' : 'Medications';
+  const panelTitle = panel === 'people' ? 'People' : panel === 'profile' ? 'Your profile' : panel === 'notifications' ? 'Medication reminders' : panel === 'recipient' ? selected?.name || 'Care recipient' : 'Medications';
   const medications = state.medications.filter((m) => panel !== 'recipient' || m.recipientId === selectedId);
   function personDetails(person: Recipient) { return [['Date of birth', person.birthDate], ['Sex', person.sex], ['Blood type', person.bloodType], ['Height', person.height && `${person.height} cm`], ['Weight', person.weight && `${person.weight} kg`], ['Conditions', person.conditions.join(', ')], ['Allergies', person.allergies.join(', ')]]; }
   return <View style={s.screen}>
@@ -82,7 +82,7 @@ export default function Home() {
     <BottomNav active={activeNav} />
     <Modal visible={panel !== null} transparent animationType="slide" onRequestClose={() => setPanel(null)}>
       <View style={{ flex: 1, justifyContent: 'flex-end' }}><Pressable onPress={() => setPanel(null)} accessibilityLabel="Close panel" style={[StyleSheet.absoluteFill, { backgroundColor: '#0006' }]} /><View style={{ height: height * 0.8, backgroundColor: '#fff', borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 24, paddingBottom: insets.bottom + 24 }}><View style={s.heading}><Text style={[styles.title, { fontSize: 24 }]}>{panelTitle}</Text><CloseButton label="Close panel" onPress={() => setPanel(null)} /></View><ScrollView contentContainerStyle={{ gap: 16 }}>
-        {panel === 'people' || panel === 'choose' ? <>{state.recipients.map((person) => <Button key={person.id} title={person.name} onPress={() => panel === 'choose' ? addMedication(person.id) : (setSelectedId(person.id), setPanel('recipient'))} />)}<Button title="Add Care Recipient" onPress={() => { setPanel(null); router.push('/setup/care-recipient'); }} /></> : null}
+        {panel === 'people' ? <>{state.recipients.map((person) => <Button key={person.id} title={person.name} onPress={() => { setSelectedId(person.id); setPanel('recipient'); }} />)}<Button title="Add Care Recipient" onPress={() => { setPanel(null); router.push('/setup/care-recipient'); }} /></> : null}
         {panel === 'profile' ? <Text style={styles.text}>WeCare{ '\n\n' }{state.recipients.length} care recipients{ '\n' }{state.medications.length} saved medications</Text> : null}
         {panel === 'recipient' && selected ? <>{personDetails(selected).map(([label, value]) => value ? <View key={label}><Text style={styles.label}>{label}</Text><Text style={styles.text}>{value}</Text></View> : null)}<Button title="Add Medication" onPress={() => addMedication(selected.id)} /></> : null}
         {['recipient', 'medications', 'notifications'].includes(panel || '') ? <>{medications.length ? medications.map((m) => <View key={m.id} style={{ gap: 4, backgroundColor: '#f3f3f3', padding: 14, borderRadius: 10 }}><Text style={styles.label}>{m.name}</Text><Text style={styles.text}>{m.dosage} · {m.frequency}</Text><Text style={styles.text}>{m.times.map(displayTime).join(', ')}</Text><Text style={styles.text}>{state.recipients.find((p) => p.id === m.recipientId)?.name}</Text></View>) : <Text style={styles.text}>No medications added yet.</Text>}</> : null}
