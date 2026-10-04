@@ -1,0 +1,16 @@
+.env
+.env.*
+!.env.example
+node_modules/
+.next/
+dist/
+build/
+coverage/
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.DS_Store
+device/.env
+device/serviceAccount.json
+device/debug_images/

@@ -1,0 +1,8 @@
+# Webcam scan
+opencv-python
+google-genai
+python-dotenv
+pytz
+
+# Optional legacy Firestore data source
+firebase-admin

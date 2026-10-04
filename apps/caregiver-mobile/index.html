@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>carebot Caregiver App</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="page-shell">
+      <header class="page-header">
+        <p class="eyebrow">carebot caregiver app</p>
+        <h1>Medication schedule</h1>
+        <p class="intro">Add the medicines and times that the bedside device should remind the patient about.</p>
+        <p class="connection-line">Backend: <span id="connection-status" class="connection-status connecting">Connecting…</span></p>
+      </header>
+
+      <section class="panel" aria-labelledby="add-medication-heading">
+        <h2 id="add-medication-heading">Add medication</h2>
+        <form id="medication-form">
+          <div class="form-grid">
+            <label>
+              Medication name
+              <input id="medication-name" name="name" type="text" placeholder="Example: Amlodipine" required />
+            </label>
+
+            <label>
+              Dose
+              <input id="medication-dose" name="dose" type="text" placeholder="Example: 5 mg" />
+            </label>
+
+            <label>
+              Reminder time
+              <input id="medication-time" name="time" type="time" required />
+            </label>
+
+            <label>
+              Notes
+              <input id="medication-notes" name="notes" type="text" placeholder="Example: Take with water" />
+            </label>
+          </div>
+
+          <fieldset>
+            <legend>Repeat on</legend>
+            <div class="day-grid">
+              <label class="day-option"><input type="checkbox" name="days" value="Mon" checked /> Mon</label>
+              <label class="day-option"><input type="checkbox" name="days" value="Tue" checked /> Tue</label>
+              <label class="day-option"><input type="checkbox" name="days" value="Wed" checked /> Wed</label>
+              <label class="day-option"><input type="checkbox" name="days" value="Thu" checked /> Thu</label>
+              <label class="day-option"><input type="checkbox" name="days" value="Fri" checked /> Fri</label>
+              <label class="day-option"><input type="checkbox" name="days" value="Sat" checked /> Sat</label>
+              <label class="day-option"><input type="checkbox" name="days" value="Sun" checked /> Sun</label>
+            </div>
+          </fieldset>
+
+          <button class="primary-button" type="submit">Add to schedule</button>
+          <p id="form-message" class="form-message" role="status" aria-live="polite"></p>
+        </form>
+      </section>
+
+      <section class="panel" aria-labelledby="schedule-heading">
+        <div class="section-heading">
+          <div>
+            <h2 id="schedule-heading">Current schedule</h2>
+            <p class="muted">Schedules sync to the API when it is running.</p>
+          </div>
+          <span id="schedule-count" class="count-badge">0</span>
+        </div>
+        <div id="schedule-list" class="schedule-list"></div>
+      </section>
+
+      <section class="panel" aria-labelledby="attention-heading">
+        <div class="section-heading">
+          <div>
+            <h2 id="attention-heading">Needs attention</h2>
+            <p class="muted">Alerts appear when a reminder has no touch confirmation after one hour.</p>
+          </div>
+          <span id="attention-count" class="count-badge">0</span>
+        </div>
+        <div id="attention-list" class="attention-list">
+          <p class="empty-state">No unanswered reminders.</p>
+        </div>
+      </section>
+    </main>
+    <script src="app.js" defer></script>
+  </body>
+</html>

@@ -1,0 +1,14 @@
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: carebot
+      POSTGRES_USER: carebot
+      POSTGRES_PASSWORD: carebot_dev_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - carebot_postgres_data:/var/lib/postgresql/data
+
+volumes:
+  carebot_postgres_data:
