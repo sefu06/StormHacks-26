@@ -11,7 +11,11 @@ venv/
 
 # Node / web app
 node_modules/
+.next/
+out/
 dist/
+*.log
+*.tsbuildinfo
 .DS_Store
 
 # debug images captured by the device
