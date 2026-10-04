@@ -1,4 +1,4 @@
-# CareCompanion
+# WeCare
 
 A caregiver app for iOS and Android, built with Expo and React Native in `mobile/`.
 The original Next.js web prototype remains in the root directory.

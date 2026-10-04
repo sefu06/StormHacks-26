@@ -28,7 +28,7 @@ export default function PeopleJoinPage() {
         <span className="people-join-icon" aria-hidden="true">
           <UserRound size={24} strokeWidth={1.8} />
         </span>
-        <p className="people-join-kicker">CareCompanion</p>
+        <p className="people-join-kicker">WeCare</p>
         <h1>Join your care plan</h1>
         <p>{name ? `${name}, you’ve been invited to be added to a care plan.` : "You’ve been invited to be added to a care plan."}</p>
         <Button onClick={joinCarePlan} disabled={!name.trim()}>Join care plan</Button>

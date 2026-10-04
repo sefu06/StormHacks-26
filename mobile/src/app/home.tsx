@@ -1,9 +1,9 @@
+import ActionClose from '../../assets/home/action-close.svg';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Pill from '../../assets/home/pill.svg';
-import PillExpanded from '../../assets/home/pill-expanded.svg';
+import Pill from '../../assets/home/pill-expanded.svg';
 import Plus from '../../assets/home/plus.svg';
 import ListIcon from '../../assets/home/list.svg';
 import Profile from '../../assets/home/profile.svg';
@@ -43,19 +43,23 @@ export default function Home() {
   const medications = state.medications.filter((m) => panel !== 'recipient' || m.recipientId === selectedId);
   function personDetails(person: Recipient) { return [['Date of birth', person.birthDate], ['Sex', person.sex], ['Blood type', person.bloodType], ['Height', person.height && `${person.height} cm`], ['Weight', person.weight && `${person.weight} kg`], ['Conditions', person.conditions.join(', ')], ['Allergies', person.allergies.join(', ')]]; }
   return <View style={s.screen}>
-    <ScrollView contentContainerStyle={{ paddingTop: Math.max(insets.top + 32, height * 263 / 994), paddingHorizontal: 30, paddingBottom: 220 }}>
+    <ScrollView
+      style={{ marginTop: insets.top, marginBottom: Math.max(112, insets.bottom + 78) }}
+      bounces={false}
+      contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', paddingHorizontal: 30, paddingVertical: 24 }}>
       <View style={s.content}><View style={s.heading}><Text style={s.headingText}>Overview</Text><Pressable accessibilityRole="button" accessibilityLabel="Open your profile" onPress={() => setPanel('profile')}><Profile /></Pressable></View>
         {!!error && <Text style={styles.error}>{error}</Text>}
         <View style={{ gap: 53, marginTop: 50 }}>{people.map((person, index) => {
           const yellow = index % 2 === 1;
           const saved = state.medications.filter((m) => m.recipientId === person.id);
-          const due = saved.filter((m) => m.startDate <= today && (!m.endDate || m.endDate >= today));
+          const missed = saved.filter((m) => (m.status ?? 'Missed') === 'Missed' && m.startDate <= today && (!m.endDate || m.endDate >= today));
+          const taken = saved.filter((m) => m.status === 'Taken');
           const demo = !state.recipients.length;
           return <View key={person.id} style={{ height: yellow ? 128 : 131 }}>
             <View style={{ position: 'absolute', left: yellow ? 79 : 183.5, top: 11.5, transform: yellow ? [{ scaleX: -1 }] : undefined }}>{yellow ? <BubbleLeft /> : <BubbleRight />}</View>
             <View style={[s.bubble, { alignSelf: yellow ? 'flex-end' : 'flex-start', backgroundColor: yellow ? '#ffefc1' : '#ffd6ae' }]}>
-              <View style={s.statusRow}><AlertIcon /><Text numberOfLines={1} style={[s.statusText, demo && { flexShrink: 0 }]}><Text style={s.statusLabel}>{demo ? 'Missing:' : 'Due:'}</Text> {demo ? 'Lisopril, 10mg tablet' : due[0] ? `${due[0].name}, ${due[0].dosage}` : 'No medications due'}</Text></View>
-              <View style={s.statusRow}><Check /><Text numberOfLines={1} style={[s.statusText, demo && { flexShrink: 0 }]}><Text style={s.statusLabel}>{demo ? 'Taken:' : 'Saved:'}</Text> {demo ? 'Vyvanse, 10mg capsule' : `${saved.length} medication${saved.length === 1 ? '' : 's'}`}</Text></View>
+              <View style={s.statusRow}><AlertIcon /><Text numberOfLines={1} style={[s.statusText, demo && { flexShrink: 0 }]}><Text style={s.statusLabel}>Missed:</Text> {demo ? 'Lisopril, 10mg tablet' : missed[0] ? `${missed[0].name}, ${missed[0].dosage}` : 'None'}</Text></View>
+              <View style={s.statusRow}><Check /><Text numberOfLines={1} style={[s.statusText, demo && { flexShrink: 0 }]}><Text style={s.statusLabel}>Taken:</Text> {demo ? 'Vyvanse, 10mg capsule' : taken[0] ? `${taken[0].name}, ${taken[0].dosage}` : 'None'}</Text></View>
             </View>
             <Pressable accessibilityRole="button" accessibilityLabel={`View ${person.name}`} onPress={() => { setSelectedId(person.id); setPanel('recipient'); }} style={[s.personBar, { top: yellow ? 87 : 90 }]}><Text numberOfLines={1} style={s.personName}>{person.name}</Text><View style={{ transform: [{ rotate: '-90deg' }] }}><Chevron /></View></Pressable>
             <View pointerEvents="none" style={{ position: 'absolute', left: yellow ? 13 : 235, top: yellow ? 7.91 : 19 }}><HomeDog yellow={yellow} expanded={expanded} /></View>
@@ -69,13 +73,13 @@ export default function Home() {
         <Pressable accessibilityRole="button" accessibilityLabel="View medication list" onPress={() => { setExpanded(false); setPanel('medications'); }} style={[s.action, { left: 48, top: 0 }]}><ListIcon /></Pressable>
         <Pressable accessibilityRole="button" accessibilityLabel="Add medication" onPress={() => addMedication()} style={[s.action, { left: 0, top: 40 }]}><Plus /></Pressable>
       </>}
-      <Pressable accessibilityRole="button" accessibilityLabel={expanded ? 'Collapse medication actions' : 'Expand medication actions'} accessibilityState={{ expanded }} onPress={() => setExpanded((value) => !value)} style={[s.pill, { right: 0, bottom: 0 }]}>{expanded ? <PillExpanded /> : <Pill />}</Pressable>
+      <Pressable accessibilityRole="button" accessibilityLabel={expanded ? 'Collapse medication actions' : 'Expand medication actions'} accessibilityState={{ expanded }} onPress={() => setExpanded((value) => !value)} style={[s.pill, { right: 0, bottom: 0 }]}>{expanded ? <ActionClose /> : <Pill />}</Pressable>
     </View>
     <BottomNav active={activeNav} />
     <Modal visible={panel !== null} transparent animationType="slide" onRequestClose={() => setPanel(null)}>
       <View style={{ flex: 1, justifyContent: 'flex-end' }}><Pressable onPress={() => setPanel(null)} accessibilityLabel="Close panel" style={[StyleSheet.absoluteFill, { backgroundColor: '#0006' }]} /><View style={{ height: height * 0.8, backgroundColor: '#fff', borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 24, paddingBottom: insets.bottom + 24 }}><View style={s.heading}><Text style={[styles.title, { fontSize: 24 }]}>{panelTitle}</Text><CloseButton label="Close panel" onPress={() => setPanel(null)} /></View><ScrollView contentContainerStyle={{ gap: 16 }}>
         {panel === 'people' || panel === 'choose' ? <>{state.recipients.map((person) => <Button key={person.id} title={person.name} onPress={() => panel === 'choose' ? addMedication(person.id) : (setSelectedId(person.id), setPanel('recipient'))} />)}<Button title="Add Care Recipient" onPress={() => { setPanel(null); router.push('/setup/care-recipient'); }} /></> : null}
-        {panel === 'profile' ? <Text style={styles.text}>CareCompanion{ '\n\n' }{state.recipients.length} care recipients{ '\n' }{state.medications.length} saved medications</Text> : null}
+        {panel === 'profile' ? <Text style={styles.text}>WeCare{ '\n\n' }{state.recipients.length} care recipients{ '\n' }{state.medications.length} saved medications</Text> : null}
         {panel === 'recipient' && selected ? <>{personDetails(selected).map(([label, value]) => value ? <View key={label}><Text style={styles.label}>{label}</Text><Text style={styles.text}>{value}</Text></View> : null)}<Button title="Add Medication" onPress={() => addMedication(selected.id)} /></> : null}
         {['recipient', 'medications', 'notifications'].includes(panel || '') ? <>{medications.length ? medications.map((m) => <View key={m.id} style={{ gap: 4, backgroundColor: '#f3f3f3', padding: 14, borderRadius: 10 }}><Text style={styles.label}>{m.name}</Text><Text style={styles.text}>{m.dosage} · {m.frequency}</Text><Text style={styles.text}>{m.times.map(displayTime).join(', ')}</Text><Text style={styles.text}>{state.recipients.find((p) => p.id === m.recipientId)?.name}</Text></View>) : <Text style={styles.text}>No medications added yet.</Text>}</> : null}
       </ScrollView></View></View>
@@ -90,5 +94,5 @@ const s = StyleSheet.create({
   personBar: { position: 'absolute', left: 0, right: 0, height: 41, borderRadius: 10, backgroundColor: '#d9d9d9', paddingHorizontal: 10, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }, personName: { fontFamily: 'PlusJakartaSans_400Regular', fontSize: 12, color: '#505050', flexShrink: 1 },
   nav: { position: 'absolute', alignSelf: 'center', flexDirection: 'row', alignItems: 'center', gap: 42, borderRadius: 20, backgroundColor: '#f3f3f3', paddingHorizontal: 18, paddingVertical: 6 },
   navActive: { backgroundColor: '#d9d9d9', borderRadius: 30, padding: 8 },
-  pill: { position: 'absolute', width: 54, height: 54, backgroundColor: '#e18f3f', borderRadius: 27, padding: 12 }, action: { position: 'absolute', width: 40, height: 40, backgroundColor: '#eca662', borderRadius: 27, alignItems: 'center', justifyContent: 'center' },
+  pill: { position: 'absolute', width: 54, height: 54, backgroundColor: '#e18f3f', borderRadius: 27, padding: 12, alignItems: 'center', justifyContent: 'center' }, action: { position: 'absolute', width: 40, height: 40, backgroundColor: '#eca662', borderRadius: 27, alignItems: 'center', justifyContent: 'center' },
 });

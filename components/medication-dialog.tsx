@@ -219,7 +219,7 @@ export function MedicationDialog({ open, people, onOpenChange, onSave, initialNa
               <Camera size={28} strokeWidth={1.8} />
             </div>
             <h3>Scan label</h3>
-            <p>Camera scanning is planned for a future version of CareCompanion. You can continue by entering the details manually.</p>
+            <p>Camera scanning is planned for a future version of WeCare. You can continue by entering the details manually.</p>
             <Button onClick={() => setStep("details")}>Continue manually</Button>
             <Button type="button" variant="outline" onClick={goBack}>Choose another method</Button>
           </div>

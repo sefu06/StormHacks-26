@@ -12,7 +12,7 @@ import { useCare } from '../lib/care-store';
 const examples = [
   { id: 'example-1', name: 'Vyvanse', dosage: '10mg capsule', status: 'Taken', yellow: false },
   { id: 'example-2', name: 'Vyvanse', dosage: '10mg capsule', status: 'Taken', yellow: false },
-  { id: 'example-3', name: 'Lisopril', dosage: '10mg tablet', status: 'Missing', yellow: true },
+  { id: 'example-3', name: 'Lisopril', dosage: '10mg tablet', status: 'Missed', yellow: true },
 ];
 export default function Activity() {
   const { state, error } = useCare();
@@ -20,7 +20,7 @@ export default function Activity() {
   const insets = useSafeAreaInsets();
   const entries = state.recipients.length ? state.medications.map((medication) => ({
     id: medication.id, name: medication.name, dosage: medication.dosage,
-    status: 'Saved', yellow: state.recipients.findIndex((person) => person.id === medication.recipientId) % 2 === 1,
+    status: medication.status ?? 'Missed', yellow: state.recipients.findIndex((person) => person.id === medication.recipientId) % 2 === 1,
   })) : examples;
   return <View style={s.screen}>
     <ScrollView contentContainerStyle={{ paddingTop: Math.max(insets.top + 32, height * 263 / 994), paddingHorizontal: 30, paddingBottom: 150 }}>
@@ -32,7 +32,7 @@ export default function Activity() {
           <View style={{ position: 'absolute', left: entry.yellow ? 89 : 183.5, top: 11.5, transform: entry.yellow ? [{ scaleX: -1 }] : undefined }}>{entry.yellow ? <BubbleLeft /> : <BubbleRight />}</View>
           <View style={[s.bubble, { marginLeft: entry.yellow ? 116 : 0, backgroundColor: entry.yellow ? '#ffefc1' : '#ffd6ae' }]}>
             <Text numberOfLines={1} style={s.medication}>{entry.name}</Text>
-            <View style={s.statusRow}>{entry.status === 'Missing' ? <AlertIcon /> : <Check />}<Text numberOfLines={1} style={s.status}><Text style={s.statusLabel}>{entry.status}:</Text> {entry.dosage}</Text></View>
+            <View style={s.statusRow}>{entry.status === 'Missed' ? <AlertIcon /> : <Check />}<Text numberOfLines={1} style={s.status}><Text style={s.statusLabel}>{entry.status}:</Text> {entry.dosage}</Text></View>
           </View>
           <View pointerEvents="none" style={{ position: 'absolute', left: entry.yellow ? 13 : 235, top: entry.yellow ? 14.66 : 19 }}><HomeDog yellow={entry.yellow} activity /></View>
         </View>)}</View>

@@ -12,7 +12,7 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "CareCompanion",
+  title: "WeCare",
   description: "A calm caregiver app for Margaret’s care.",
 };
 

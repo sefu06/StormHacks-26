@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 const profileDetails = [
   { label: "Name", value: "David" },
   { label: "Care recipient", value: "Margaret" },
-  { label: "Account type", value: "CareCompanion demo" },
+  { label: "Account type", value: "WeCare demo" },
 ];
 
 const notificationDetails = [
@@ -83,7 +83,7 @@ export default function ProfilePage() {
 
       <div className="caregiver-profile-about">
         <HeartHandshake size={18} strokeWidth={1.8} aria-hidden="true" />
-        <span>CareCompanion helps you coordinate Margaret’s day-to-day care.</span>
+        <span>WeCare helps you coordinate Margaret’s day-to-day care.</span>
       </div>
 
     </div>

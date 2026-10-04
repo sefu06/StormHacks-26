@@ -91,11 +91,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <div className="app-shell">
       <aside className="desktop-sidebar" aria-label="Primary navigation">
         <div className="sidebar-inner">
-          <Link href="/home" className="brand" aria-label="CareCompanion home">
+          <Link href="/home" className="brand" aria-label="WeCare home">
             <span className="brand-mark" aria-hidden="true">
               <HeartHandshake size={18} strokeWidth={1.8} />
             </span>
-            <span className="brand-wordmark">CareCompanion</span>
+            <span className="brand-wordmark">WeCare</span>
           </Link>
 
           <div className="sidebar-recipient">

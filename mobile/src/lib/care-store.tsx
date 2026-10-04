@@ -2,7 +2,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 
 export type Recipient = { id: string; name: string; birthDate: string; sex: string; pregnant: string; bloodType: string; height: string; weight: string; conditions: string[]; allergies: string[] };
-export type Medication = { id: string; recipientId: string; name: string; dosage: string; frequency: string; times: string[]; rx: string; strength: string; startDate: string; endDate: string; expiryDate: string; refills: string };
+export type MedicationStatus = 'Missed' | 'Taken';
+export type Medication = { status?: MedicationStatus; id: string; recipientId: string; name: string; dosage: string; frequency: string; times: string[]; rx: string; strength: string; startDate: string; endDate: string; expiryDate: string; refills: string };
 type CareState = { recipients: Recipient[]; medications: Medication[] };
 const empty: CareState = { recipients: [], medications: [] };
 const key = 'carecompanion.native.v1';
@@ -30,7 +31,7 @@ export function CareProvider({ children }: { children: ReactNode }) {
   }
   async function saveMedication(medication: Omit<Medication, 'id'>) {
     if (!state.recipients.some(({ id }) => id === medication.recipientId)) throw Error('Choose a care recipient first.');
-    await persist({ ...state, medications: [...state.medications, { ...medication, id: `medication-${Date.now()}` }] });
+    await persist({ ...state, medications: [...state.medications, { ...medication, status: medication.status ?? 'Missed', id: `medication-${Date.now()}` }] });
   }
   async function removeRecipient(id: string) {
     await persist({ recipients: state.recipients.filter((person) => person.id !== id), medications: state.medications.filter((medication) => medication.recipientId !== id) });
